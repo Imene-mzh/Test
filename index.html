@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Studio Copy</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Studio Copy">
+<link rel="apple-touch-icon" id="appIcon">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rose:#f2c4ce;--rose-deep:#e8a0b0;--blush:#fdf0f3;--cream:#fdf8f2;
+  --sage:#c8d8c0;--sage-deep:#a8c09a;--lav:#d4cce8;--peach:#f7d9c4;
+  --text:#3a2e35;--soft:#7a6472;--border:#eedde4;--white:#fffcfd;--gold:#c9a96e;
+  --alert:#fff3d4;--alert-text:#b8840a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 10% 10%,rgba(242,196,206,.2) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 90% 80%,rgba(212,204,232,.16) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.deco{position:fixed;pointer-events:none;z-index:0;opacity:.09;}
+.app{position:relative;z-index:1;max-width:1340px;margin:0 auto;padding:0 20px 60px;}
+
+/* SYNC */
+.syncbar{display:flex;align-items:center;justify-content:center;gap:6px;padding:5px;font-size:.68rem;color:var(–soft);}
+.sd{width:6px;height:6px;border-radius:50%;background:#a8d8b8;transition:background .3s;}
+.sd.sync{background:var(–gold);animation:blink .7s infinite;}
+.sd.err{background:#e89090;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* HEADER */
+header{padding:32px 0 20px;text-align:center;}
+.hf{font-size:18px;letter-spacing:6px;opacity:.58;margin-bottom:10px;}
+header h1{font-family:‘Cormorant Garamond’,serif;font-size:clamp(1.8rem,4.5vw,2.9rem);font-weight:300;letter-spacing:.04em;}
+header h1 em{font-style:italic;color:var(–rose-deep);}
+.hs{font-size:.74rem;color:var(–soft);margin-top:6px;letter-spacing:.11em;text-transform:uppercase;}
+.hd{width:90px;height:1px;background:linear-gradient(90deg,transparent,var(–rose-deep),transparent);margin:13px auto 0;}
+
+/* STATS */
+.statsbar{display:flex;gap:8px;justify-content:center;margin:18px 0 24px;flex-wrap:wrap;}
+.sp{background:var(–white);border:1px solid var(–border);border-radius:40px;padding:7px 14px;display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(–soft);box-shadow:0 2px 10px rgba(180,120,140,.06);transition:transform .18s;}
+.sp:hover{transform:translateY(-1px);}
+.sn{font-family:‘Cormorant Garamond’,serif;font-size:1.2rem;font-weight:600;color:var(–text);line-height:1;}
+.sd2{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* ALERT BANNER */
+.alert-banner{background:var(–alert);border:1px solid #f0d080;border-radius:12px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(–alert-text);cursor:pointer;transition:opacity .2s;}
+.alert-banner:hover{opacity:.85;}
+
+/* GRID */
+.mg{display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:start;}
+.sb{display:flex;flex-direction:column;gap:14px;}
+
+/* CARD */
+.card{background:var(–white);border:1px solid var(–border);border-radius:18px;padding:16px;box-shadow:0 3px 18px rgba(160,100,120,.05);}
+.ct{font-family:‘Cormorant Garamond’,serif;font-size:.96rem;font-weight:600;color:var(–text);margin-bottom:11px;display:flex;align-items:center;gap:6px;}
+
+/* SEARCH */
+.sw{position:relative;}
+.sw input{width:100%;padding:8px 11px 8px 32px;border:1px solid var(–border);border-radius:40px;background:var(–blush);font-family:‘DM Sans’,sans-serif;font-size:.75rem;color:var(–text);outline:none;transition:border .18s;}
+.sw input:focus{border-color:var(–rose-deep);}
+.sw input::placeholder{color:var(–soft);}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;opacity:.4;}
+
+/* PLIST */
+.pl{display:flex;flex-direction:column;gap:5px;margin-top:10px;}
+.pi{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:10px;cursor:pointer;transition:background .16s,transform .13s;border:1px solid transparent;position:relative;}
+.pi:hover{background:var(–blush);transform:translateX(2px);}
+.pi.active{background:var(–blush);border-color:var(–rose);}
+.pa{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:‘Cormorant Garamond’,serif;font-size:.88rem;color:white;flex-shrink:0;}
+.pinfo{flex:1;min-width:0;}
+.pname{font-size:.77rem;font-weight:500;color:var(–text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pniche{font-size:.65rem;color:var(–soft);margin-top:1px;}
+.sb2{font-size:.58rem;padding:2px 6px;border-radius:20px;font-weight:500;flex-shrink:0;text-transform:uppercase;}
+.s-envoyé{background:#fff3d4;color:#b8840a;}
+.s-réponse{background:#d4f0de;color:#2a8a50;}
+.s-relance{background:#e8d8f8;color:#7040b0;}
+.s-refus{background:#fde0e0;color:#c04040;}
+.s-nouveau{background:#dde8ff;color:#3060b0;}
+.relance-dot{width:7px;height:7px;border-radius:50%;background:#e8a030;position:absolute;top:7px;right:7px;animation:blink .9s infinite;}
+
+/* SCORE */
+.score-badge{display:flex;align-items:center;gap:4px;font-size:.62rem;color:var(–soft);margin-top:2px;}
+.score-bar{height:3px;border-radius:2px;background:var(–border);flex:1;overflow:hidden;}
+.score-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(–rose),var(–rose-deep));transition:width .4s;}
+
+/* BUTTONS */
+.ab{width:100%;padding:8px;background:linear-gradient(135deg,var(–rose),var(–rose-deep));color:white;border:none;border-radius:10px;font-family:‘DM Sans’,sans-serif;font-size:.75rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:9px;box-shadow:0 3px 11px rgba(232,160,176,.25);transition:opacity .18s,transform .13s;}
+.ab:hover{opacity:.9;transform:translateY(-1px);}
+.lb{width:100%;padding:8px;border:none;border-radius:10px;font-family:‘DM Sans’,sans-serif;font-size:.75rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:5px;transition:opacity .18s,transform .13s;}
+.lb:hover{opacity:.9;transform:translateY(-1px);}
+
+/* CHIP */
+.chip{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(–blush);border:1px solid var(–border);border-radius:8px;margin-bottom:5px;font-size:.7rem;color:var(–text);}
+.chiptag{font-size:.58rem;padding:2px 5px;border-radius:10px;font-weight:500;flex-shrink:0;}
+
+/* FICHE */
+.fiche{background:var(–white);border:1px solid var(–border);border-radius:18px;overflow:hidden;box-shadow:0 3px 18px rgba(160,100,120,.05);}
+.fb{height:78px;position:relative;display:flex;align-items:flex-end;padding:0 20px 0;}
+.fav{width:60px;height:60px;border-radius:50%;border:3px solid var(–white);display:flex;align-items:center;justify-content:center;font-family:‘Cormorant Garamond’,serif;font-size:1.45rem;color:white;flex-shrink:0;position:relative;top:24px;box-shadow:0 3px 12px rgba(0,0,0,.12);}
+.fnb{margin-left:13px;padding-bottom:5px;}
+.fn{font-family:‘Cormorant Garamond’,serif;font-size:1.3rem;font-weight:400;color:white;text-shadow:0 1px 5px rgba(0,0,0,.18);}
+.fsu{font-size:.7rem;color:rgba(255,255,255,.85);margin-top:1px;}
+.fbody{padding:38px 20px 18px;}
+
+/* SCORE DISPLAY */
+.score-display{display:flex;align-items:center;gap:10px;margin-bottom:14px;background:var(–blush);border:1px solid var(–border);border-radius:11px;padding:11px 14px;}
+.score-circle{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:‘Cormorant Garamond’,serif;font-size:1.3rem;font-weight:600;flex-shrink:0;border:2px solid var(–border);}
+.score-info{flex:1;}
+.score-label{font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(–soft);margin-bottom:3px;}
+.score-desc{font-size:.74rem;color:var(–text);}
+
+/* STAT BOXES */
+.sr{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.sb3{flex:1;min-width:70px;background:var(–blush);border:1px solid var(–border);border-radius:10px;padding:9px 10px;text-align:center;}
+.sv{font-family:‘Cormorant Garamond’,serif;font-size:1.2rem;font-weight:600;color:var(–text);display:block;}
+.sl{font-size:.63rem;color:var(–soft);margin-top:1px;letter-spacing:.05em;text-transform:uppercase;}
+
+/* AI BOX */
+.aibox{background:linear-gradient(135deg,#fdf0f3,#f0edf8);border:1px solid var(–border);border-radius:12px;padding:13px;margin-bottom:14px;}
+.ait{font-family:‘Cormorant Garamond’,serif;font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.aid{font-size:.72rem;color:var(–soft);margin-bottom:9px;line-height:1.5;}
+.aibtn{padding:7px 14px;background:linear-gradient(135deg,#9b7fd4,#7b5fb4);color:white;border:none;border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:.73rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px;box-shadow:0 3px 11px rgba(155,127,212,.26);transition:opacity .18s,transform .13s;}
+.aibtn:hover{opacity:.9;transform:translateY(-1px);}
+.aibtn.green{background:linear-gradient(135deg,#5a9a6a,#3a7a4a);}
+.aibtn.blue{background:linear-gradient(135deg,#4a7ab4,#2a5a94);}
+.airesult{background:var(–white);border:1px solid var(–border);border-radius:9px;padding:11px;font-size:.72rem;color:var(–soft);line-height:1.7;white-space:pre-wrap;margin-top:9px;max-height:200px;overflow-y:auto;display:none;}
+.airesult.on{display:block;}
+.aicopy{margin-top:6px;padding:5px 11px;background:var(–white);border:1px solid var(–border);border-radius:7px;font-family:‘DM Sans’,sans-serif;font-size:.7rem;color:var(–soft);cursor:pointer;display:none;align-items:center;gap:4px;transition:background .16s;}
+.aicopy.on{display:inline-flex;}
+.aicopy:hover{background:var(–blush);}
+
+/* TABS */
+.tabs{display:flex;gap:1px;border-bottom:1px solid var(–border);margin-bottom:15px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tab{padding:7px 11px;font-size:.7rem;color:var(–soft);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .16s,border-color .16s;white-space:nowrap;flex-shrink:0;}
+.tab:hover{color:var(–text);}
+.tab.active{color:var(–rose-deep);border-bottom-color:var(–rose-deep);font-weight:500;}
+.tp{display:none;}
+.tp.active{display:block;}
+
+/* TIMELINE */
+.tl{display:flex;flex-direction:column;}
+.tli{display:flex;gap:10px;padding-bottom:14px;position:relative;}
+.tli::before{content:’’;position:absolute;left:11px;top:22px;bottom:0;width:1px;background:linear-gradient(180deg,var(–rose),transparent);}
+.tli:last-child::before{display:none;}
+.tld{width:24px;height:24px;border-radius:50%;background:var(–white);border:2px solid var(–rose);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;z-index:1;}
+.tlc{flex:1;}
+.tldt{font-size:.64rem;color:var(–soft);margin-bottom:3px;letter-spacing:.05em;text-transform:uppercase;}
+.tlcard{background:var(–blush);border:1px solid var(–border);border-radius:10px;padding:10px;}
+.tltit{font-size:.76rem;font-weight:500;color:var(–text);margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+.tlbody{font-size:.72rem;color:var(–soft);line-height:1.6;white-space:pre-wrap;}
+.tlwhy{margin-top:6px;padding-top:6px;border-top:1px solid var(–border);font-size:.68rem;color:var(–rose-deep);font-style:italic;display:flex;gap:4px;}
+
+/* NETWORK */
+.netcard{background:var(–blush);border:1px solid var(–border);border-radius:11px;padding:12px;margin-bottom:8px;}
+.nh{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.nico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(–white);border:1px solid var(–border);}
+.nstats{display:flex;gap:6px;flex-wrap:wrap;}
+.nst{font-size:.68rem;color:var(–soft);background:var(–white);border:1px solid var(–border);border-radius:6px;padding:3px 7px;}
+.nbio{font-size:.7rem;color:var(–soft);margin-top:7px;line-height:1.5;padding-top:6px;border-top:1px solid var(–border);}
+
+/* EMAIL MARKETING */
+.em-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.em-field{background:var(–blush);border:1px solid var(–border);border-radius:10px;padding:10px;}
+.em-label{font-size:.63rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(–soft);margin-bottom:4px;}
+.em-val{font-size:.76rem;color:var(–text);}
+.email-memo{background:var(–blush);border:1px solid var(–border);border-radius:10px;padding:11px;margin-bottom:8px;}
+.email-memo-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.email-memo-from{font-size:.74rem;font-weight:500;color:var(–text);}
+.email-memo-date{font-size:.64rem;color:var(–soft);}
+.email-memo-subject{font-size:.72rem;color:var(–rose-deep);margin-bottom:5px;font-style:italic;}
+.email-memo-body{font-size:.71rem;color:var(–soft);line-height:1.6;white-space:pre-wrap;}
+
+/* ADS & TUNNELS */
+.tunnel-card{background:var(–blush);border:1px solid var(–border);border-radius:11px;padding:12px;margin-bottom:9px;}
+.tunnel-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.tunnel-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(–white);border:1px solid var(–border);}
+.tunnel-name{font-size:.8rem;font-weight:500;color:var(–text);}
+.tunnel-type{font-size:.63rem;color:var(–soft);}
+.tunnel-link{font-size:.68rem;color:var(–rose-deep);text-decoration:none;}
+.tunnel-link:hover{text-decoration:underline;}
+.tunnel-notes{font-size:.72rem;color:var(–soft);line-height:1.55;margin-top:6px;padding-top:6px;border-top:1px solid var(–border);}
+.tunnel-ai{margin-top:8px;}
+
+/* MIND MAP INTERACTIVE */
+.mm-wrap{background:var(–blush);border:1px solid var(–border);border-radius:12px;overflow:hidden;}
+.mm-toolbar{display:flex;gap:6px;padding:9px 12px;background:var(–white);border-bottom:1px solid var(–border);flex-wrap:wrap;align-items:center;}
+.mm-tb{padding:5px 10px;border:1px solid var(–border);border-radius:7px;background:var(–blush);font-family:‘DM Sans’,sans-serif;font-size:.69rem;color:var(–soft);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px;}
+.mm-tb:hover{background:var(–rose);color:white;border-color:var(–rose);}
+.mm-tb.on{background:var(–rose-deep);color:white;border-color:var(–rose-deep);}
+.mm-tb.del:hover{background:#fde0e0;color:#c04040;border-color:#f0c0c0;}
+.mm-stage{position:relative;width:100%;height:440px;overflow:hidden;cursor:grab;touch-action:none;background:var(–blush);}
+.mm-stage.grabbing{cursor:grabbing;}
+.mm-stage.linking{cursor:crosshair;}
+.mm-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+.mm-node{position:absolute;border-radius:12px;padding:8px 11px;font-size:.7rem;font-weight:500;cursor:grab;border:2px solid transparent;text-align:center;word-break:break-word;line-height:1.4;z-index:3;min-width:80px;max-width:130px;transition:box-shadow .15s,border-color .15s;touch-action:none;user-select:none;}
+.mm-node.sel{border-color:var(–rose-deep)!important;box-shadow:0 0 0 3px rgba(232,160,176,.28);}
+.mm-node.link-src{border-color:#9b7fd4!important;}
+.mm-node-del{position:absolute;top:-7px;right:-7px;width:16px;height:16px;border-radius:50%;background:#f0c0c0;border:none;cursor:pointer;font-size:9px;display:none;align-items:center;justify-content:center;color:#c04040;z-index:4;}
+.mm-node.sel .mm-node-del{display:flex;}
+.mm-node-lnk{position:absolute;bottom:-7px;right:-7px;width:16px;height:16px;border-radius:50%;background:var(–lavender);border:none;cursor:pointer;font-size:9px;display:none;align-items:center;justify-content:center;color:#5040a0;z-index:4;}
+.mm-node.sel .mm-node-lnk{display:flex;}
+.mm-popup{position:fixed;background:var(–white);border:1px solid var(–border);border-radius:13px;padding:13px;font-size:.73rem;color:var(–soft);line-height:1.6;max-width:250px;box-shadow:0 8px 26px rgba(160,100,120,.14);z-index:999;display:none;pointer-events:all;}
+.mm-popup.on{display:block;}
+.mm-node{position:absolute;border-radius:10px;padding:8px 12px;font-size:.71rem;font-weight:500;border:1px solid;text-align:center;cursor:default;transition:transform .2s;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.mm-node:hover{transform:scale(1.05);}
+.mm-center{background:linear-gradient(135deg,var(–rose),var(–rose-deep));color:white;border-color:var(–rose-deep);font-family:‘Cormorant Garamond’,serif;font-size:.9rem;}
+.mm-net{background:#dde8ff;color:#3060b0;border-color:#b0c8ee;}
+.mm-email{background:#fff3d4;color:#b8840a;border-color:#f0d898;}
+.mm-tunnel{background:#d4f0de;color:#1a7a40;border-color:#a8d8b8;}
+.mm-ads{background:#fde8d4;color:#a04010;border-color:#f0c8a0;}
+.mm-strat{background:#e8d8f8;color:#6030a0;border-color:#d4cce8;}
+svg.mm-lines{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+
+/* CONCURRENCE */
+.concur-card{background:var(–blush);border:1px solid var(–border);border-radius:11px;padding:12px;margin-bottom:8px;}
+.concur-label{font-size:.63rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(–soft);margin-bottom:5px;}
+
+/* STRATEGY */
+.stratblock{background:var(–blush);border:1px solid var(–border);border-radius:11px;padding:12px;margin-bottom:8px;}
+.strathead{font-family:‘Cormorant Garamond’,serif;font-size:.92rem;font-weight:600;color:var(–text);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sfield{background:var(–white);border:1px solid var(–border);border-radius:8px;padding:8px;}
+.sflbl{font-size:.61rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(–soft);margin-bottom:3px;}
+.sfval{font-size:.72rem;color:var(–soft);line-height:1.5;}
+
+/* DOCS */
+.docitem{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;background:var(–blush);border:1px solid var(–border);border-radius:10px;margin-bottom:6px;}
+
+/* NOTES */
+.na{width:100%;min-height:100px;padding:10px 11px;background:var(–blush);border:1px solid var(–border);border-radius:10px;font-family:‘DM Sans’,sans-serif;font-size:.75rem;color:var(–text);resize:vertical;outline:none;line-height:1.65;transition:border-color .16s;}
+.na:focus{border-color:var(–rose-deep);}
+.na::placeholder{color:var(–soft);}
+
+/* SECTION LABEL */
+.slbl{font-size:.64rem;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(–soft);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.slbl::after{content:’’;flex:1;height:1px;background:var(–border);}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;}
+.ef{font-size:38px;margin-bottom:10px;opacity:.4;}
+.et{font-family:‘Cormorant Garamond’,serif;font-size:1.2rem;font-weight:300;color:var(–text);margin-bottom:5px;}
+.es{font-size:.75rem;color:var(–soft);}
+
+/* PANELS */
+.pov{position:fixed;inset:0;background:rgba(58,46,53,.38);backdrop-filter:blur(5px);z-index:300;display:flex;align-items:stretch;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .3s;}
+.pov.open{opacity:1;pointer-events:all;}
+.pp{width:min(740px,96vw);background:var(–cream);height:100vh;overflow-y:auto;box-shadow:-18px 0 60px rgba(58,46,53,.15);transform:translateX(34px);transition:transform .3s;display:flex;flex-direction:column;}
+.pov.open .pp{transform:translateX(0);}
+.phead{background:var(–white);border-bottom:1px solid var(–border);padding:20px 22px 15px;position:sticky;top:0;z-index:10;}
+.ptitle{font-family:‘Cormorant Garamond’,serif;font-size:1.5rem;font-weight:300;display:flex;align-items:center;gap:8px;}
+.ptitle em{font-style:italic;color:var(–rose-deep);}
+.psub{font-size:.68rem;color:var(–soft);margin-top:3px;letter-spacing:.07em;text-transform:uppercase;}
+.pcl{position:absolute;top:18px;right:18px;width:28px;height:28px;border-radius:50%;background:var(–blush);border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(–soft);transition:background .16s;}
+.pcl:hover{background:var(–rose);color:white;}
+.pfilt{display:flex;gap:5px;flex-wrap:wrap;padding:10px 22px;background:var(–white);border-bottom:1px solid var(–border);}
+.fb{padding:4px 10px;border-radius:20px;border:1px solid var(–border);background:var(–blush);font-family:‘DM Sans’,sans-serif;font-size:.68rem;color:var(–soft);cursor:pointer;transition:all .15s;}
+.fb:hover{background:var(–rose);color:white;border-color:var(–rose);}
+.fb.active{background:var(–rose-deep);color:white;border-color:var(–rose-deep);}
+.pbody{padding:18px 22px;flex:1;}
+.alb{width:100%;padding:10px;background:transparent;border:1.5px dashed var(–rose);border-radius:11px;font-family:‘DM Sans’,sans-serif;font-size:.75rem;color:var(–rose-deep);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .16s;margin-bottom:14px;}
+.alb:hover{background:var(–blush);}
+
+/* PRINCIPE CARD */
+.prc{background:var(–white);border:1px solid var(–border);border-radius:13px;margin-bottom:9px;overflow:hidden;transition:box-shadow .16s;}
+.prc:hover{box-shadow:0 5px 18px rgba(160,100,120,.09);}
+.prh{padding:12px 14px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;}
+.pricon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.prm{flex:1;}
+.prtit{font-family:‘Cormorant Garamond’,serif;font-size:.97rem;font-weight:600;color:var(–text);}
+.praut{font-size:.64rem;color:var(–soft);margin-top:1px;font-style:italic;}
+.prsum{font-size:.72rem;color:var(–soft);margin-top:3px;line-height:1.45;}
+.prtags{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px;}
+.tag{font-size:.59rem;padding:2px 6px;border-radius:20px;font-weight:500;}
+.te{background:#fff3d4;color:#b8840a;}.tp2{background:#d4e8ff;color:#2060a0;}.tv{background:#d4f0de;color:#1a7a40;}.tn{background:#e8d8f8;color:#6030a0;}.ts{background:#d8f0e8;color:#1a6a50;}.ta{background:#fde0e8;color:#c04060;}.tm{background:#ffe8d4;color:#a04010;}
+.prexp{background:none;border:none;cursor:pointer;color:var(–soft);font-size:15px;padding:2px;transition:transform .2s,color .16s;flex-shrink:0;}
+.prexp.open{transform:rotate(180deg);color:var(–rose-deep);}
+.prb{display:none;padding:0 14px 14px;}
+.prb.open{display:block;}
+.prbi{background:var(–blush);border:1px solid var(–border);border-radius:9px;padding:12px;font-size:.74rem;color:var(–soft);line-height:1.7;white-space:pre-wrap;}
+.prna{width:100%;min-height:65px;padding:8px 10px;background:var(–white);border:1px solid var(–border);border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:.72rem;color:var(–text);resize:vertical;outline:none;line-height:1.6;margin-top:8px;transition:border-color .16s;}
+.prna:focus{border-color:var(–rose-deep);}
+.prna::placeholder{color:var(–soft);}
+
+/* COURS CARD */
+.cc{background:var(–white);border:1px solid var(–border);border-radius:13px;margin-bottom:9px;overflow:hidden;}
+.cch{padding:12px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;}
+.ccic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ccm{flex:1;}
+.cct{font-family:‘Cormorant Garamond’,serif;font-size:.95rem;font-weight:600;color:var(–text);}
+.ccs{font-size:.64rem;color:var(–soft);margin-top:1px;font-style:italic;}
+.ccd{font-size:.7rem;color:var(–soft);margin-top:2px;line-height:1.4;}
+.ccb{display:none;padding:0 14px 14px;}
+.ccb.open{display:block;}
+.ccexp{background:none;border:none;cursor:pointer;color:var(–soft);font-size:15px;padding:2px;transition:transform .2s;flex-shrink:0;}
+.ccexp.open{transform:rotate(180deg);color:var(–rose-deep);}
+
+/* MODALS */
+.mov{position:fixed;inset:0;background:rgba(58,46,53,.32);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;padding:14px;opacity:0;pointer-events:none;transition:opacity .26s;}
+.mov.open{opacity:1;pointer-events:all;}
+.modal{background:var(–white);border-radius:18px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 18px 60px rgba(58,46,53,.17);transform:translateY(14px);transition:transform .26s;border:1px solid var(–border);}
+.mov.open .modal{transform:translateY(0);}
+.mh{padding:18px 18px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.mt{font-family:‘Cormorant Garamond’,serif;font-size:1.15rem;font-weight:400;}
+.mcl{width:26px;height:26px;border-radius:50%;background:var(–blush);border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(–soft);transition:background .16s;}
+.mcl:hover{background:var(–rose);color:white;}
+.mb{padding:0 18px 18px;display:flex;flex-direction:column;gap:11px;}
+.mf{padding:0 18px 18px;display:flex;gap:7px;justify-content:flex-end;}
+.fl{font-size:.68rem;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(–soft);margin-bottom:3px;}
+.fi,.fse{width:100%;padding:8px 10px;background:var(–blush);border:1px solid var(–border);border-radius:9px;font-family:‘DM Sans’,sans-serif;font-size:.77rem;color:var(–text);outline:none;transition:border-color .16s;}
+.fi:focus,.fse:focus{border-color:var(–rose-deep);}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.bcnl{padding:7px 14px;background:transparent;border:1px solid var(–border);border-radius:9px;font-family:‘DM Sans’,sans-serif;font-size:.74rem;color:var(–soft);cursor:pointer;transition:background .16s;}
+.bcnl:hover{background:var(–blush);}
+.bcsv{padding:7px 17px;background:linear-gradient(135deg,var(–rose),var(–rose-deep));border:none;border-radius:9px;font-family:‘DM Sans’,sans-serif;font-size:.74rem;font-weight:500;color:white;cursor:pointer;box-shadow:0 3px 10px rgba(232,160,176,.28);transition:opacity .16s,transform .13s;}
+.bcsv:hover{opacity:.9;transform:translateY(-1px);}
+.bdel{padding:5px 11px;background:#fde0e0;border:1px solid #f0c0c0;border-radius:7px;font-family:‘DM Sans’,sans-serif;font-size:.68rem;color:#c04040;cursor:pointer;}
+.cbtn{padding:5px 10px;border:none;border-radius:7px;font-family:‘DM Sans’,sans-serif;font-size:.69rem;cursor:pointer;font-weight:500;transition:opacity .16s,transform .12s;}
+.cbtn:hover{opacity:.87;transform:translateY(-1px);}
+.colorbtn{padding:5px 9px;border-radius:7px;border:2px solid transparent;cursor:pointer;font-size:13px;transition:border-color .13s;}
+.colorbtn.sel{border-color:#7a6472;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(16px);background:var(–text);color:white;padding:8px 16px;border-radius:20px;font-size:.73rem;opacity:0;transition:all .26s;z-index:999;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@keyframes fi2{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.fiche,.card{animation:fi2 .28s ease both;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(–rose);border-radius:10px;}
+@media(max-width:800px){.mg{grid-template-columns:1fr;}.sgrid{grid-template-columns:1fr;}.em-grid{grid-template-columns:1fr;}.fr{grid-template-columns:1fr;}}
+</style>
+
+</head>
+<body>
+
+<svg class="deco" style="top:-50px;right:-50px;width:260px;height:260px;" viewBox="0 0 200 200">
+  <g transform="translate(100,100)"><ellipse rx="13" ry="33" fill="#f2c4ce" transform="rotate(0)"/><ellipse rx="13" ry="33" fill="#d4cce8" transform="rotate(45)"/><ellipse rx="13" ry="33" fill="#f2c4ce" transform="rotate(90)"/><ellipse rx="13" ry="33" fill="#d4cce8" transform="rotate(135)"/><ellipse rx="13" ry="33" fill="#f2c4ce" transform="rotate(180)"/><ellipse rx="13" ry="33" fill="#d4cce8" transform="rotate(225)"/><ellipse rx="13" ry="33" fill="#f2c4ce" transform="rotate(270)"/><ellipse rx="13" ry="33" fill="#d4cce8" transform="rotate(315)"/><circle r="10" fill="#fdf0f3"/></g>
+</svg>
+<svg class="deco" style="bottom:50px;left:-50px;width:220px;height:220px;" viewBox="0 0 200 200">
+  <g transform="translate(100,100)"><ellipse rx="11" ry="30" fill="#c8d8c0" transform="rotate(0)"/><ellipse rx="11" ry="30" fill="#f7d9c4" transform="rotate(60)"/><ellipse rx="11" ry="30" fill="#c8d8c0" transform="rotate(120)"/><ellipse rx="11" ry="30" fill="#f7d9c4" transform="rotate(180)"/><ellipse rx="11" ry="30" fill="#c8d8c0" transform="rotate(240)"/><ellipse rx="11" ry="30" fill="#f7d9c4" transform="rotate(300)"/><circle r="9" fill="#fdf8f2"/></g>
+</svg>
+
+<div class="toast" id="toast"></div>
+
+<div class="app">
+  <div class="syncbar"><span class="sd" id="sd"></span><span id="stxt">Chargement...</span></div>
+  <div id="alertBanner"></div>
+
+  <header>
+    <div class="hf">🌸 ✦ 🌷 ✦ 🌸</div>
+    <h1>Mon Studio <em>Copy</em></h1>
+    <p class="hs">CRM · Prospection · Principes · Cloud ☁️</p>
+    <div class="hd"></div>
+  </header>
+
+  <div class="statsbar">
+    <div class="sp"><span class="sd2" style="background:#3060b0;"></span><span class="sn" id="cnt-t">0</span><span>Prospects</span></div>
+    <div class="sp"><span class="sd2" style="background:#b8840a;"></span><span class="sn" id="cnt-e">0</span><span>Envoyés</span></div>
+    <div class="sp"><span class="sd2" style="background:#2a8a50;"></span><span class="sn" id="cnt-r">0</span><span>Réponses</span></div>
+    <div class="sp"><span class="sd2" style="background:#7040b0;"></span><span class="sn" id="cnt-rl">0</span><span>Relances</span></div>
+    <div class="sp"><span class="sd2" style="background:var(--rose-deep);"></span><span class="sn" id="cnt-tx">0%</span><span>Taux réponse</span></div>
+  </div>
+
+  <div class="mg">
+    <aside class="sb">
+      <div class="card">
+        <div class="ct">🌿 Mes Prospects</div>
+        <div class="sw"><span class="si">🔍</span><input type="text" id="searchInput" placeholder="Rechercher..." oninput="filterP()"></div>
+        <div class="pl" id="plist"></div>
+        <button class="ab" onclick="openM('prospect')">+ Ajouter un prospect</button>
+      </div>
+      <div class="card" style="cursor:pointer;" onclick="openPanel('lib')">
+        <div class="ct">✨ Bibliothèque de Principes</div>
+        <div id="prprev"></div>
+        <button class="lb" style="background:linear-gradient(135deg,var(--lav),#b8a8d8);color:#4a3870;box-shadow:0 3px 10px rgba(180,160,220,.18);" onclick="openPanel('lib');event.stopPropagation()">📖 Ouvrir la bibliothèque</button>
+      </div>
+      <div class="card" style="cursor:pointer;" onclick="openPanel('cours')">
+        <div class="ct">📚 Mes Cours & Ressources</div>
+        <div id="cprev"></div>
+        <button class="lb" style="background:linear-gradient(135deg,var(--sage),var(--sage-deep));color:#2a4a22;box-shadow:0 3px 10px rgba(168,192,154,.18);" onclick="openPanel('cours');event.stopPropagation()">📂 Ouvrir la médiathèque</button>
+      </div>
+    </aside>
+    <main id="main">
+      <div class="fiche"><div class="empty"><div class="ef">🌸</div><div class="et">Sélectionne un prospect</div><div class="es">ou ajoute-en un nouveau ✨</div></div></div>
+    </main>
+  </div>
+</div>
+
+<!-- ══ PANEL LIB ══ -->
+
+<div class="pov" id="libPanel" onclick="closePBg(event,'libPanel')">
+  <div class="pp">
+    <div class="phead"><button class="pcl" onclick="closePanel('libPanel')">✕</button><div class="ptitle">✨ Bibliothèque de <em>Principes</em></div><div class="psub">Clique pour développer · Notes personnelles</div></div>
+    <div class="pfilt" id="libF"><button class="fb active" onclick="setLF('all',this)">Tous</button><button class="fb" onclick="setLF('email',this)">📧 Email</button><button class="fb" onclick="setLF('pdv',this)">📄 PdV</button><button class="fb" onclick="setLF('vsl',this)">🎬 VSL</button><button class="fb" onclick="setLF('nl',this)">📰 NL</button><button class="fb" onclick="setLF('seq',this)">🔗 Séquence</button></div>
+    <div class="pbody"><button class="alb" onclick="openM('principle')">+ Ajouter un principe</button><div id="prlist"></div></div>
+  </div>
+</div>
+
+<!-- ══ PANEL COURS ══ -->
+
+<div class="pov" id="coursPanel" onclick="closePBg(event,'coursPanel')">
+  <div class="pp">
+    <div class="phead"><button class="pcl" onclick="closePanel('coursPanel')">✕</button><div class="ptitle">📚 Mes Cours & <em>Ressources</em></div><div class="psub">Formations, PDF et ressources importantes</div></div>
+    <div class="pfilt" id="coursF"><button class="fb active" onclick="setCF('all',this)">Tous</button><button class="fb" onclick="setCF('email',this)">📧 Email</button><button class="fb" onclick="setCF('pdv',this)">📄 PdV</button><button class="fb" onclick="setCF('vsl',this)">🎬 VSL</button><button class="fb" onclick="setCF('nl',this)">📰 NL</button><button class="fb" onclick="setCF('seq',this)">🔗 Séquence</button><button class="fb" onclick="setCF('mindset',this)">🧠 Mindset</button></div>
+    <div class="pbody"><button class="alb" onclick="openM('cours')">+ Ajouter un cours</button><div id="courslist"></div></div>
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- PROSPECT -->
+
+<div class="mov" id="m-prospect"><div class="modal">
+  <div class="mh"><div class="mt">🌷 Nouveau Prospect</div><button class="mcl" onclick="closeM('m-prospect')">✕</button></div>
+  <div class="mb">
+    <div><div class="fl">Nom / Pseudo</div><input class="fi" id="fp-name" placeholder="ex: @leacrea"></div>
+    <div><div class="fl">Niche / Domaine</div><input class="fi" id="fp-niche" placeholder="ex: Business en ligne, Fitness..."></div>
+    <div><div class="fl">Statut</div><select class="fse" id="fp-status"><option value="nouveau">🔵 Nouveau</option><option value="envoyé">🟡 Envoyé</option><option value="relance">🟣 Relance</option><option value="réponse">🟢 Réponse</option><option value="refus">🔴 Refus</option></select></div>
+    <div><div class="fl">Email de contact</div><input class="fi" id="fp-email" placeholder="contact@..."></div>
+    <div><div class="fl">Description générale</div><textarea class="fi" id="fp-desc" rows="3" style="resize:vertical;" placeholder="Ce que fait ce créateur..."></textarea></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-prospect')">Annuler</button><button class="bcsv" onclick="saveProspect()">Créer ✨</button></div>
+</div></div>
+
+<!-- RÉSEAU -->
+
+<div class="mov" id="m-network"><div class="modal">
+  <div class="mh"><div class="mt">🌐 Réseau Social</div><button class="mcl" onclick="closeM('m-network')">✕</button></div>
+  <div class="mb">
+    <div class="fr"><div><div class="fl">Plateforme</div><select class="fse" id="n-pl"><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>LinkedIn</option><option>Twitter/X</option><option>Facebook</option><option>Pinterest</option><option>Snapchat</option><option>Threads</option><option>Autre</option></select></div><div><div class="fl">Handle / @</div><input class="fi" id="n-handle" placeholder="@pseudo"></div></div>
+    <div><div class="fl">Nombre d'abonnés</div><input class="fi" id="n-followers" placeholder="ex: 12 500"></div>
+    <div class="fr"><div><div class="fl">Nb de posts</div><input class="fi" id="n-freq" placeholder="ex: 2"></div><div><div class="fl">Fréquence</div><select class="fse" id="n-ftype"><option value="jour">Par jour</option><option value="semaine">Par semaine</option><option value="mois">Par mois</option></select></div></div>
+    <div><div class="fl">Bio / Style de contenu</div><textarea class="fi" id="n-bio" rows="3" style="resize:vertical;" placeholder="Ce qu'il poste, thèmes, style..."></textarea></div>
+    <div><div class="fl">Lien profil</div><input class="fi" id="n-link" placeholder="https://..."></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-network')">Annuler</button><button class="bcsv" onclick="saveNetwork()">Ajouter ✨</button></div>
+</div></div>
+
+<!-- EMAIL MARKETING -->
+
+<div class="mov" id="m-email"><div class="modal" style="max-width:580px;">
+  <div class="mh"><div class="mt">📧 Email Marketing</div><button class="mcl" onclick="closeM('m-email')">✕</button></div>
+  <div class="mb">
+    <div class="fr"><div><div class="fl">A une newsletter ?</div><select class="fse" id="em-has"><option value="oui">✅ Oui</option><option value="non">❌ Non</option><option value="inconnu">❓ Inconnu</option></select></div><div><div class="fl">Fréquence d'envoi</div><select class="fse" id="em-freq"><option value="">—</option><option>Quotidienne</option><option>Plusieurs/semaine</option><option>Hebdomadaire</option><option>Bi-mensuelle</option><option>Mensuelle</option><option>Irrégulière</option></select></div></div>
+    <div><div class="fl">Types d'emails (ex: storytelling, vente, relation, éducatif...)</div><input class="fi" id="em-types" placeholder="ex: storytelling, relance, vente flash..."></div>
+    <div class="fr"><div><div class="fl">Email de bienvenue ?</div><select class="fse" id="em-welcome"><option value="oui">✅ Oui</option><option value="non">❌ Non</option><option value="inconnu">❓ Inconnu</option></select></div><div><div class="fl">Séquence de bienvenue ?</div><select class="fse" id="em-seq"><option value="oui">✅ Oui</option><option value="non">❌ Non</option><option value="inconnu">❓ Inconnu</option></select></div></div>
+    <div><div class="fl">Nb d'emails dans la séquence</div><input class="fi" id="em-seqcount" placeholder="ex: 5 emails"></div>
+    <div><div class="fl">Observations / Notes</div><textarea class="fi" id="em-notes" rows="3" style="resize:vertical;" placeholder="Qualité des emails, angle utilisé, points forts/faibles..."></textarea></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-email')">Annuler</button><button class="bcsv" onclick="saveEmail()">Enregistrer ✨</button></div>
+</div></div>
+
+<!-- EMAIL MÉMO -->
+
+<div class="mov" id="m-emailmemo"><div class="modal">
+  <div class="mh"><div class="mt">📨 Ajouter un email reçu</div><button class="mcl" onclick="closeM('m-emailmemo')">✕</button></div>
+  <div class="mb">
+    <div><div class="fl">Objet de l'email</div><input class="fi" id="em-subject" placeholder="ex: 3 erreurs qui coûtent des ventes..."></div>
+    <div><div class="fl">Date de réception</div><input class="fi" id="em-date" type="date"></div>
+    <div><div class="fl">Contenu de l'email</div><textarea class="fi" id="em-body" rows="6" style="resize:vertical;" placeholder="Colle ici le contenu de l'email reçu..."></textarea></div>
+    <div><div class="fl">Mes observations copy</div><textarea class="fi" id="em-obs" rows="2" style="resize:vertical;" placeholder="Ce que j'ai noté, les techniques utilisées..."></textarea></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-emailmemo')">Annuler</button><button class="bcsv" onclick="saveEmailMemo()">Ajouter ✨</button></div>
+</div></div>
+
+<!-- TUNNEL -->
+
+<div class="mov" id="m-tunnel"><div class="modal">
+  <div class="mh"><div class="mt">🎯 Ajouter une page / tunnel</div><button class="mcl" onclick="closeM('m-tunnel')">✕</button></div>
+  <div class="mb">
+    <div class="fr"><div><div class="fl">Type</div><select class="fse" id="tu-type"><option>🎬 VSL</option><option>📄 Landing Page</option><option>🛒 Page de vente</option><option>🎁 Page lead magnet</option><option>📱 Lien en bio</option><option>🛍 Page produit</option><option>🎓 Webinaire</option><option>Autre</option></select></div><div><div class="fl">Nom / Titre</div><input class="fi" id="tu-name" placeholder="ex: VSL formation principale"></div></div>
+    <div><div class="fl">Lien URL</div><input class="fi" id="tu-link" placeholder="https://..."></div>
+    <div><div class="fl">Ce qu'on trouve sur cette page</div><textarea class="fi" id="tu-content" rows="3" style="resize:vertical;" placeholder="Offre présentée, structure, CTA, prix..."></textarea></div>
+    <div><div class="fl">Points à améliorer (facultatif)</div><textarea class="fi" id="tu-improve" rows="2" style="resize:vertical;" placeholder="Ce qui pourrait être amélioré..."></textarea></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-tunnel')">Annuler</button><button class="bcsv" onclick="saveTunnel()">Ajouter ✨</button></div>
+</div></div>
+
+<!-- ADS -->
+
+<div class="mov" id="m-ads"><div class="modal">
+  <div class="mh"><div class="mt">📣 Publicités / Ads</div><button class="mcl" onclick="closeM('m-ads')">✕</button></div>
+  <div class="mb">
+    <div class="fr"><div><div class="fl">Fait des ads ?</div><select class="fse" id="ads-has"><option value="oui">✅ Oui</option><option value="non">❌ Non</option><option value="inconnu">❓ Inconnu</option></select></div><div><div class="fl">Type d'ads</div><select class="fse" id="ads-type"><option>Vidéo</option><option>Image</option><option>Carrousel</option><option>Texte</option><option>Mixte</option></select></div></div>
+    <div><div class="fl">Plateforme(s)</div><input class="fi" id="ads-platform" placeholder="ex: Meta, Google, TikTok Ads..."></div>
+    <div><div class="fl">Observations</div><textarea class="fi" id="ads-notes" rows="3" style="resize:vertical;" placeholder="Angle des pubs, message, offre mise en avant..."></textarea></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-ads')">Annuler</button><button class="bcsv" onclick="saveAds()">Enregistrer ✨</button></div>
+</div></div>
+
+<!-- CONCURRENCE -->
+
+<div class="mov" id="m-concur"><div class="modal">
+  <div class="mh"><div class="mt">🔍 Analyse Concurrence</div><button class="mcl" onclick="closeM('m-concur')">✕</button></div>
+  <div class="mb">
+    <div><div class="fl">A déjà un copywriter ?</div><select class="fse" id="cc-has"><option value="inconnu">❓ Inconnu</option><option value="oui">✅ Oui</option><option value="non">❌ Non</option></select></div>
+    <div><div class="fl">Qualité du copy actuel</div><select class="fse" id="cc-qual"><option value="">—</option><option>⭐ Très faible</option><option>⭐⭐ Faible</option><option>⭐⭐⭐ Moyen</option><option>⭐⭐⭐⭐ Bon</option><option>⭐⭐⭐⭐⭐ Excellent</option></select></div>
+    <div><div class="fl">Concurrents directs identifiés</div><textarea class="fi" id="cc-comp" rows="2" style="resize:vertical;" placeholder="@concurrent1, @concurrent2..."></textarea></div>
+    <div><div class="fl">Positionnement actuel</div><textarea class="fi" id="cc-pos" rows="2" style="resize:vertical;" placeholder="Comment il se différencie de ses concurrents..."></textarea></div>
+    <div><div class="fl">Opportunités identifiées</div><textarea class="fi" id="cc-opps" rows="3" style="resize:vertical;" placeholder="Ce que ses concurrents font mieux, angles non exploités..."></textarea></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-concur')">Annuler</button><button class="bcsv" onclick="saveConcur()">Enregistrer ✨</button></div>
+</div></div>
+
+<!-- STRATÉGIE -->
+
+<div class="mov" id="m-strategy"><div class="modal" style="max-width:600px;">
+  <div class="mh"><div class="mt">🎯 Nouvelle Stratégie</div><button class="mcl" onclick="closeM('m-strategy')">✕</button></div>
+  <div class="mb">
+    <div><div class="fl">Nom</div><input class="fi" id="s-title" placeholder="ex: Approche storytelling v1"></div>
+    <div><div class="fl">🎯 Points de douleur</div><textarea class="fi" id="s-pain" rows="2" style="resize:vertical;" placeholder="Problèmes identifiés chez ce prospect..."></textarea></div>
+    <div><div class="fl">💎 Valeur que j'apporte</div><textarea class="fi" id="s-value" rows="2" style="resize:vertical;" placeholder="Pourquoi MOI ?"></textarea></div>
+    <div><div class="fl">📌 Angle d'attaque</div><textarea class="fi" id="s-angle" rows="2" style="resize:vertical;" placeholder="Comment j'aborde ce prospect ?"></textarea></div>
+    <div><div class="fl">⚡ Principes copy utilisés</div><textarea class="fi" id="s-prx" rows="2" style="resize:vertical;" placeholder="Ex: Slippery Slide + One-Sentence Movie..."></textarea></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-strategy')">Annuler</button><button class="bcsv" onclick="saveStrategy()">Créer ✨</button></div>
+</div></div>
+
+<!-- DOCUMENT -->
+
+<div class="mov" id="m-doc"><div class="modal">
+  <div class="mh"><div class="mt">📎 Ajouter un document</div><button class="mcl" onclick="closeM('m-doc')">✕</button></div>
+  <div class="mb">
+    <div><div class="fl">Nom</div><input class="fi" id="d-name" placeholder="ex: Audit compte Instagram"></div>
+    <div><div class="fl">Type</div><select class="fse" id="d-type"><option>📝 Note</option><option>🔗 Lien</option><option>📊 Analyse</option><option>💡 Idée</option><option>📧 Email brouillon</option><option>📁 Autre</option></select></div>
+    <div><div class="fl">Contenu</div><textarea class="fi" id="d-content" rows="4" style="resize:vertical;" placeholder="Colle ici le contenu, un lien, des notes..."></textarea></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-doc')">Annuler</button><button class="bcsv" onclick="saveDoc()">Ajouter ✨</button></div>
+</div></div>
+
+<!-- TIMELINE -->
+
+<div class="mov" id="m-tl"><div class="modal">
+  <div class="mh"><div class="mt" id="tl-mt">📧 Nouvel Email</div><button class="mcl" onclick="closeM('m-tl')">✕</button></div>
+  <div class="mb">
+    <div><div class="fl">Objet / Titre</div><input class="fi" id="tl-subj" placeholder="ex: Une idée pour tes Reels..."></div>
+    <div><div class="fl">Contenu</div><textarea class="fi" id="tl-cont" rows="5" style="resize:vertical;" placeholder="Colle ici le texte..."></textarea></div>
+    <div><div class="fl">💡 Pourquoi j'ai écrit ça ?</div><textarea class="fi" id="tl-why" rows="2" style="resize:vertical;" placeholder="Choix de l'angle, raison du ton..."></textarea></div>
+    <div><div class="fl">Date</div><input class="fi" id="tl-date" type="date"></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-tl')">Annuler</button><button class="bcsv" id="tl-sb">Enregistrer ✨</button></div>
+</div></div>
+
+<!-- EXEMPLE -->
+
+<div class="mov" id="m-ex"><div class="modal">
+  <div class="mh"><div class="mt">✍️ Exemple de Copy</div><button class="mcl" onclick="closeM('m-ex')">✕</button></div>
+  <div class="mb">
+    <div><div class="fl">Titre</div><input class="fi" id="ex-t" placeholder="ex: Email accroche v1"></div>
+    <div><div class="fl">Type</div><select class="fse" id="ex-type"><option>Email prospection</option><option>Objet email</option><option>Caption Instagram</option><option>Script vidéo</option><option>Séquence email</option><option>Landing page</option><option>Autre</option></select></div>
+    <div><div class="fl">Contenu</div><textarea class="fi" id="ex-c" rows="5" style="resize:vertical;" placeholder="Ton texte copy ici..."></textarea></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-ex')">Annuler</button><button class="bcsv" id="ex-sb">Enregistrer ✨</button></div>
+</div></div>
+
+<!-- PRINCIPE -->
+
+<div class="mov" id="m-principle"><div class="modal">
+  <div class="mh"><div class="mt">✨ Nouveau Principe</div><button class="mcl" onclick="closeM('m-principle')">✕</button></div>
+  <div class="mb">
+    <div><div class="fl">Titre</div><input class="fi" id="ap-t" placeholder="ex: La Règle des 3 Objections"></div>
+    <div><div class="fl">Auteur / Source</div><input class="fi" id="ap-a" placeholder="ex: David Ogilvy, Masterclass #2..."></div>
+    <div><div class="fl">Résumé</div><textarea class="fi" id="ap-s" rows="2" style="resize:vertical;"></textarea></div>
+    <div><div class="fl">Utilisation</div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:3px;"><label style="display:flex;align-items:center;gap:3px;font-size:.73rem;cursor:pointer;"><input type="checkbox" value="email" class="apt"> Email</label><label style="display:flex;align-items:center;gap:3px;font-size:.73rem;cursor:pointer;"><input type="checkbox" value="pdv" class="apt"> PdV</label><label style="display:flex;align-items:center;gap:3px;font-size:.73rem;cursor:pointer;"><input type="checkbox" value="vsl" class="apt"> VSL</label><label style="display:flex;align-items:center;gap:3px;font-size:.73rem;cursor:pointer;"><input type="checkbox" value="nl" class="apt"> NL</label><label style="display:flex;align-items:center;gap:3px;font-size:.73rem;cursor:pointer;"><input type="checkbox" value="seq" class="apt"> Séquence</label></div></div>
+    <div><div class="fl">Contenu détaillé</div><textarea class="fi" id="ap-b" rows="4" style="resize:vertical;"></textarea></div>
+    <div><div class="fl">Couleur</div><div style="display:flex;gap:5px;margin-top:3px;" id="apcol"><button type="button" class="colorbtn sel" onclick="selPC(this,'#fde0e8','#f2c4ce','🌸')" style="background:#fde0e8;">🌸</button><button type="button" class="colorbtn" onclick="selPC(this,'#e8d8f8','#d4cce8','💜')" style="background:#e8d8f8;">💜</button><button type="button" class="colorbtn" onclick="selPC(this,'#d4e8ff','#b0ccee','💙')" style="background:#d4e8ff;">💙</button><button type="button" class="colorbtn" onclick="selPC(this,'#d4f0de','#a8d8b8','💚')" style="background:#d4f0de;">💚</button><button type="button" class="colorbtn" onclick="selPC(this,'#fff3d4','#f0d898','✨')" style="background:#fff3d4;">✨</button><button type="button" class="colorbtn" onclick="selPC(this,'#fde8d4','#f0c8a0','🔥')" style="background:#fde8d4;">🔥</button></div></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-principle')">Annuler</button><button class="bcsv" onclick="savePrinciple()">Ajouter ✨</button></div>
+</div></div>
+
+<!-- COURS -->
+
+<div class="mov" id="m-cours"><div class="modal">
+  <div class="mh"><div class="mt">📚 Ajouter un Cours</div><button class="mcl" onclick="closeM('m-cours')">✕</button></div>
+  <div class="mb">
+    <div><div class="fl">Titre</div><input class="fi" id="c-t" placeholder="ex: Masterclass Email de Vente"></div>
+    <div class="fr"><div><div class="fl">Source / Auteur</div><input class="fi" id="c-s" placeholder="ex: Alex Hormozi"></div><div><div class="fl">Catégorie</div><select class="fse" id="c-cat"><option value="email">📧 Email</option><option value="pdv">📄 PdV</option><option value="vsl">🎬 VSL</option><option value="nl">📰 NL</option><option value="seq">🔗 Séquence</option><option value="mindset">🧠 Mindset</option></select></div></div>
+    <div><div class="fl">Description</div><textarea class="fi" id="c-d" rows="2" style="resize:vertical;"></textarea></div>
+    <div><div class="fl">Contenu / Points clés</div><textarea class="fi" id="c-c" rows="4" style="resize:vertical;"></textarea></div>
+    <div><div class="fl">Lien</div><input class="fi" id="c-l" placeholder="https://..."></div>
+    <div><div class="fl">Icône</div><div style="display:flex;gap:5px;margin-top:3px;" id="ccol"><button type="button" class="colorbtn sel" onclick="selCC(this,'#d4e8ff','📄')" style="background:#d4e8ff;">📄</button><button type="button" class="colorbtn" onclick="selCC(this,'#fde0e8','🎥')" style="background:#fde0e8;">🎥</button><button type="button" class="colorbtn" onclick="selCC(this,'#d4f0de','📊')" style="background:#d4f0de;">📊</button><button type="button" class="colorbtn" onclick="selCC(this,'#fff3d4','📖')" style="background:#fff3d4;">📖</button><button type="button" class="colorbtn" onclick="selCC(this,'#e8d8f8','🎓')" style="background:#e8d8f8;">🎓</button><button type="button" class="colorbtn" onclick="selCC(this,'#fde8d4','🔥')" style="background:#fde8d4;">🔥</button></div></div>
+  </div>
+  <div class="mf"><button class="bcnl" onclick="closeM('m-cours')">Annuler</button><button class="bcsv" onclick="saveCours()">Ajouter ✨</button></div>
+</div></div>
+
+<script>
+// ══════════════════════════════════
+// SUPABASE
+// ══════════════════════════════════
+const SU='https://ftbiwyewsildstwlnawd.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0Yml3eWV3c2lsZHN0d2xuYXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMDAzODcsImV4cCI6MjA5Mjc3NjM4N30.qvHwnbLO133xKS8vFQlff-eOFHjRjx9pJroYOum8QDY';
+let cloud=false;
+
+async function sbF(table,method='GET',body=null,filter=''){
+  const url=`${SU}/rest/v1/${table}${filter?'?'+filter:''}`;
+  const h={'apikey':SK,'Authorization':'Bearer '+SK,'Content-Type':'application/json'};
+  if(method==='POST')h['Prefer']='return=representation';
+  const r=await fetch(url,{method,headers:h,body:body?JSON.stringify(body):null});
+  if(!r.ok)throw new Error(await r.text());
+  const t=await r.text();return t?JSON.parse(t):null;
+}
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let prospects=[],principles=[],cours=[];
+let aId=null,aTab='timeline';
+let libF2='all',coursF2='all';
+let curNP=null,curSP=null,curDP=null,curTP=null,curEP=null,curEMP=null,curTuP=null,curAP=null,curCP=null;
+let newPC={bg:'#fde0e8',border:'#f2c4ce',icon:'🌸'};
+let newCC2={bg:'#d4e8ff',icon:'📄'};
+
+const COLS=[['#e8a0b0','#f2c4ce'],['#9eb8c8','#c4d8e8'],['#b0c8a0','#c8e0b8'],['#c8a0e8','#dcc4f8'],['#e8c0a0','#f8d8c4'],['#a0c8b8','#c4e8d8']];
+const TN={email:'Email',pdv:'Page de vente',vsl:'VSL',nl:'Newsletter',seq:'Séquence',all:'Tous',mindset:'Mindset'};
+const TC={email:'te',pdv:'tp2',vsl:'tv',nl:'tn',seq:'ts',all:'ta',mindset:'tm'};
+const NI={Instagram:'📸',TikTok:'🎵',YouTube:'▶️',LinkedIn:'💼','Twitter/X':'🐦',Facebook:'👥',Pinterest:'📌',Snapchat:'👻',Threads:'🧵',Autre:'🌐'};
+const TUI={VSL:'🎬','Landing Page':'📄','Page de vente':'🛒','Page lead magnet':'🎁','Lien en bio':'📱','Page produit':'🛍','Webinaire':'🎓',Autre:'🔗'};
+
+// ══════════════════════════════════
+// DEFAULTS
+// ══════════════════════════════════
+const DEFS=[
+  {id:1,title:"BAB / PS / PAS",author:"Masterclass #1",summary:"3 mini-structures pour clarifier ton message avant de penser à une structure complète.",tags:['email','pdv','vsl','nl'],color:{bg:'#fde8d4',border:'#f0c8a0',icon:'🔥'},body:`BAB (Before – After – Bridge)\nSituation → Transformation → Pont.\n\nPS (Problème → Solution)\nFrustration + comment la résoudre.\n\nPAS (Problème → Agitation → Solution)\nTu CREUSES le problème avant la solution.`,notes:''},
+  {id:2,title:"La Micro-Tension Narrative",author:"Sugarman · Halbert",summary:"Créer une petite scène interrompue. Le cerveau déteste les boucles ouvertes (effet Zeigarnik).",tags:['email','nl','seq'],color:{bg:'#e8d8f8',border:'#d4cce8',icon:'💜'},body:`Principe de Zeigarnik : une action interrompue reste active dans l'esprit.\n\n1. Un appel — "Mon téléphone a sonné."\n2. Une phrase choc — "On doit arrêter."\n3. Action interrompue — "J'étais sur le point d'envoyer… quand je me suis rendu compte."\n\nRègle : simple et CRÉDIBLE.`,notes:''},
+  {id:3,title:"Le Pattern Interrupt",author:"Joseph Sugarman",summary:"Casser le flux narratif toutes les 6-10 lignes pour réveiller un cerveau en pilotage automatique.",tags:['email','pdv','vsl','nl'],color:{bg:'#fde0e8',border:'#f2c4ce',icon:'🌸'},body:`Toutes les 6-10 lignes : rupture émotionnelle ou narrative.\n\nTypes : souvenir personnel, détail étrange, contradiction, révélation.\n\nEx : "Il venait de faire 12 000€.\nEt c'est là que j'ai repensé à mon père."`,notes:''},
+  {id:4,title:"Le One-Sentence Movie",author:"Gary Halbert",summary:"Un hook doit déclencher un film mental instantané. Test : peut-on filmer cette phrase ?",tags:['email','pdv','vsl','nl'],color:{bg:'#d4e8ff',border:'#b0ccee',icon:'💙'},body:`Test : "Peut-on FILMER cette phrase ?"\n\n❌ "Comment gagner plus d'argent ?"\n✅ "J'ai envoyé cet email à 9h02. À 9h17, Stripe : 11 430€."\n\nMarqueurs de réalité : heure précise, date, lieu, chiffre exact.`,notes:''},
+  {id:5,title:"L'Expansion du Désir",author:"Eugene Schwartz",summary:"Vends le MOMENT EXACT où le résultat se produit. 3 dimensions : proximité, tangibilité, identification.",tags:['pdv','vsl','email'],color:{bg:'#d4f0de',border:'#a8d8b8',icon:'💚'},body:`1. Proximité : "Demain matin, ton premier client pourrait te payer."\n2. Tangibilité : "Fermer ton ordi à 15h un mercredi"\n3. Identification : "Toi, devant ton écran, ta première vente"\n\nVends le moment exact (notif Stripe, client qui dit oui…).`,notes:''},
+  {id:6,title:"Le Slippery Slide",author:"Joseph Sugarman",summary:"Chaque phrase crée une mini-tension. 4 types : curiosité, contradiction, conséquence, incomplète.",tags:['email','pdv','vsl','nl','seq'],color:{bg:'#fff3d4',border:'#f0d898',icon:'✨'},body:`4 types :\n1. Curiosité — "Ce que j'ai vu m'a surpris." → quoi ?\n2. Contradiction — "Tout ce qu'on t'a appris est faux." → pourquoi ?\n3. Conséquence — "C'est pour ça qu'il a perdu 10 000€."\n4. Incomplète — "Je n'aurais jamais dû faire ça."\n\nCouper les phrases TROP TÔT.`,notes:''},
+  {id:7,title:"Le Value Lock",author:"Alex Hormozi",summary:"Rendre le REFUS illogique. Problème intolérable → solution inévitable → supprimer les résistances.",tags:['pdv','vsl','email'],color:{bg:'#fde8d4',border:'#f0c8a0',icon:'🔥'},body:`1. INTOLÉRABLE : "Tu laisses de l'argent sur la table. Aujourd'hui."\n2. INÉVITABLE : "Soit tu maîtrises ton acquisition… soit tu dépends des autres."\n3. Enlever les excuses : "Même si tu bosses 10h/jour, ça prend 30 minutes."`,notes:''},
+  {id:8,title:"La Dominance Silencieuse",author:"Gary Bencivenga",summary:"Paraître crédible sans chercher à convaincre. Plus tu essaies de prouver… moins tu l'es.",tags:['email','pdv','nl'],color:{bg:'#e8d8f8',border:'#d4cce8',icon:'💜'},body:`3 leviers :\n1. Observation supérieure — décris ce qu'il vit sans le formuler\n2. Neutralité apparente — "Ce n'est pas pour tout le monde."\n3. Précision tranquille — détails concrets, pas de hype\n\nDire moins pour suggérer plus.`,notes:''},
+  {id:9,title:"La Dépendance Narrative",author:"Schwartz × Brunson",summary:"Emails qu'on veut retrouver. FORTE (séquences) vs LÉGÈRE (newsletter autonome mais pas fermée).",tags:['nl','seq','email'],color:{bg:'#d4f0de',border:'#a8d8b8',icon:'💚'},body:`FORTE : séquences de vente — emails liés.\nLÉGÈRE : newsletter — autonome MAIS pas fermée.\n\n3 tensions ouvertes :\n1. Révélation incomplète\n2. Promesse différée\n3. Détail intrigant\n\nTest : "Cet email donne-t-il envie de lire le prochain ?"`,notes:''},
+  {id:10,title:"Le Marketing qui Repousse",author:"Dan Kennedy",summary:"Un bon marketing ATTIRE et REPOUSSE. Densité > volume. Si tu n'exclus personne, tu ne touches personne.",tags:['email','pdv','nl'],color:{bg:'#fde0e8',border:'#f2c4ce',icon:'🌸'},body:`Rejet assumé en OUVERTURE :\n"Cet email ne va pas plaire à tout le monde. Et c'est volontaire."\n\nMiroir inversé : décris le mauvais prospect → le bon se reconnaît.\n\n❌ "Comment attirer plus de monde ?"\n✅ "Comment attirer les BONNES personnes ?"`,notes:''}
+];
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+async function init(){
+  setSS('sync','Connexion au cloud...');
+  try{
+    const[pR,prR,cR]=await Promise.all([sbF('prospects'),sbF('principles'),sbF('courses')]);
+    prospects=pR.map(r=>({...r.data,_dbId:r.id}));
+    cours=cR.map(r=>({...r.data,_dbId:r.id}));
+    if(prR.length===0){for(const p of DEFS){const res=await sbF('principles','POST',{data:p});principles.push({...res[0].data,_dbId:res[0].id});}}
+    else principles=prR.map(r=>({...r.data,_dbId:r.id}));
+    cloud=true;setSS('ok','Synchronisé ☁️');
+  }catch(e){
+    prospects=JSON.parse(localStorage.getItem('sc4_p')||'[]');
+    principles=JSON.parse(localStorage.getItem('sc4_pr')||JSON.stringify(DEFS));
+    cours=JSON.parse(localStorage.getItem('sc4_c')||'[]');
+    setSS('err','Mode local');
+  }
+  renderAll();checkAlerts();
+}
+
+function saveL(){localStorage.setItem('sc4_p',JSON.stringify(prospects));localStorage.setItem('sc4_pr',JSON.stringify(principles));localStorage.setItem('sc4_c',JSON.stringify(cours));}
+
+function setSS(state,msg){
+  const d=document.getElementById('sd'),t=document.getElementById('stxt');
+  d.className='sd'+(state==='sync'?' sync':state==='err'?' err':'');
+  t.textContent=msg||'';
+}
+
+async function cloudSave(table,p){
+  if(!cloud){saveL();return;}
+  setSS('sync','Sauvegarde...');
+  try{if(p._dbId)await sbF(table,'PATCH',{data:p},'id=eq.'+p._dbId);setSS('ok','Synchronisé ☁️');}
+  catch(e){setSS('err','Erreur sync');saveL();}
+}
+
+async function cloudInsert(table,data){
+  if(!cloud){saveL();return null;}
+  setSS('sync','Sauvegarde...');
+  try{const res=await sbF(table,'POST',{data});setSS('ok','Synchronisé ☁️');return res[0].id;}
+  catch(e){setSS('err','Erreur sync');saveL();return null;}
+}
+
+async function cloudDel(table,dbId){if(!cloud||!dbId)return;try{await sbF(table,'DELETE',null,'id=eq.'+dbId);}catch(e){}}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+
+// ══════════════════════════════════
+// ALERTS — relance
+// ══════════════════════════════════
+function checkAlerts(){
+  const now=Date.now();
+  const toRelance=prospects.filter(p=>{
+    if(p.status!=='envoyé'&&p.status!=='relance')return false;
+    const lastTl=(p.timeline||[]).find(t=>t.type==='email'||t.type==='relance');
+    if(!lastTl||!lastTl._ts)return false;
+    const diff=(now-lastTl._ts)/(1000*60*60*24);
+    return diff>=3;
+  });
+  const ab=document.getElementById('alertBanner');
+  if(toRelance.length){
+    ab.innerHTML=`<div class="alert-banner" onclick="highlightRelance()">🔔 <strong>${toRelance.length} prospect${toRelance.length>1?'s':''} à relancer</strong> — ${toRelance.map(p=>p.name).join(', ')} — +3 jours sans réponse</div>`;
+  } else ab.innerHTML='';
+}
+
+function highlightRelance(){
+  const search=document.getElementById('searchInput');
+  // scroll to plist
+  document.getElementById('plist').scrollIntoView({behavior:'smooth'});
+}
+
+// ══════════════════════════════════
+// SCORE
+// ══════════════════════════════════
+function calcScore(p){
+  let s=0;
+  if((p.networks||[]).length>0)s+=20;
+  if((p.networks||[]).length>1)s+=10;
+  if((p.networks||[]).some(n=>parseInt((n.followers||'0').replace(/\s/g,''))>10000))s+=15;
+  if(p.emailMarketing?.has==='oui')s+=20;
+  if(p.emailMarketing?.seq==='oui')s+=10;
+  if((p.tunnels||[]).length>0)s+=15;
+  if(p.ads?.has==='oui')s+=10;
+  return Math.min(s,100);
+}
+
+function scoreColor(s){return s>=70?'#2a8a50':s>=40?'#b8840a':'#c04040';}
+function scoreLabel(s){return s>=70?'Potentiel élevé 🌟':s>=40?'Potentiel moyen ✨':'Potentiel à évaluer 🌱';}
+
+// ══════════════════════════════════
+// RENDER
+// ══════════════════════════════════
+function renderAll(){renderList();updateStats();renderPrPrev();renderCPrev();}
+
+function renderList(f=''){
+  const l=document.getElementById('plist');
+  const d=prospects.filter(p=>p.name.toLowerCase().includes(f.toLowerCase())||(p.niche||'').toLowerCase().includes(f.toLowerCase()));
+  if(!d.length){l.innerHTML=`<div style="text-align:center;padding:12px;font-size:.71rem;color:var(--soft);">Aucun prospect 🌸</div>`;return;}
+  const now=Date.now();
+  l.innerHTML=d.map(p=>{
+    const sc=calcScore(p);
+    const lastTl=(p.timeline||[]).find(t=>t.type==='email'||t.type==='relance');
+    const needRelance=lastTl&&lastTl._ts&&(now-lastTl._ts)/(1000*60*60*24)>=3&&(p.status==='envoyé'||p.status==='relance');
+    return`<div class="pi${p.id===aId?' active':''}" onclick="selP(${p.id})">
+      <div class="pa" style="background:linear-gradient(135deg,${p.color[0]},${p.color[1]});">${p.name[0].toUpperCase()}</div>
+      <div class="pinfo">
+        <div class="pname">${p.name}</div>
+        <div class="pniche">${p.niche||'—'}</div>
+        <div class="score-badge"><span style="color:${scoreColor(sc)};font-size:.63rem;">${sc}/100</span><div class="score-bar"><div class="score-fill" style="width:${sc}%;background:${scoreColor(sc)};"></div></div></div>
+      </div>
+      <div class="sb2 s-${p.status}">${p.status}</div>
+      ${needRelance?'<span class="relance-dot" title="À relancer !"></span>':''}
+    </div>`;
+  }).join('');
+}
+
+function filterP(){renderList(document.getElementById('searchInput').value);}
+
+function updateStats(){
+  document.getElementById('cnt-t').textContent=prospects.length;
+  document.getElementById('cnt-e').textContent=prospects.filter(p=>p.status==='envoyé').length;
+  document.getElementById('cnt-r').textContent=prospects.filter(p=>p.status==='réponse').length;
+  document.getElementById('cnt-rl').textContent=prospects.filter(p=>p.status==='relance').length;
+  const tx=prospects.length?Math.round(prospects.filter(p=>p.status==='réponse').length/prospects.length*100):0;
+  document.getElementById('cnt-tx').textContent=tx+'%';
+}
+
+function selP(id){aId=id;aTab='timeline';renderList(document.getElementById('searchInput').value);renderFiche();}
+
+// ══════════════════════════════════
+// RENDER FICHE
+// ══════════════════════════════════
+function renderFiche(){
+  const p=prospects.find(x=>x.id===aId);if(!p)return;
+  const sc=calcScore(p);
+  const nets=p.networks||[];
+  const strats=p.strategies||[];
+  const docs=p.docs||[];
+  const tunnels=p.tunnels||[];
+  const emailMemos=p.emailMemos||[];
+
+  document.getElementById('main').innerHTML=`
+<div class="fiche" style="animation:fi2 .28s ease both;">
+  <div class="fb" style="background:linear-gradient(135deg,${p.color[0]},${p.color[1]});">
+    <div class="fav">${p.name[0].toUpperCase()}</div>
+    <div class="fnb"><div class="fn">${p.name}</div><div class="fsu">${p.niche||''}</div></div>
+    <div style="position:absolute;top:9px;right:10px;display:flex;gap:5px;">
+      <div class="sb2 s-${p.status}" style="background:rgba(255,255,255,.9);">${p.status}</div>
+      <button onclick="delP(${p.id})" style="background:rgba(255,255,255,.18);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+  </div>
+
+  <div class="fbody">
+    <!-- SCORE -->
+    <div class="score-display">
+      <div class="score-circle" style="background:${scoreColor(sc)}22;border-color:${scoreColor(sc)}44;color:${scoreColor(sc)};">${sc}</div>
+      <div class="score-info"><div class="score-label">Score de potentiel</div><div class="score-desc">${scoreLabel(sc)}</div></div>
+    </div>
+
+    <!-- MINI STATS -->
+    <div class="sr">
+      <div class="sb3"><span class="sv">${nets.length}</span><div class="sl">Réseaux</div></div>
+      <div class="sb3"><span class="sv">${p.timeline.filter(t=>t.type==='email').length}</span><div class="sl">Emails</div></div>
+      <div class="sb3"><span class="sv">${tunnels.length}</span><div class="sl">Pages</div></div>
+      <div class="sb3"><span class="sv">${strats.length}</span><div class="sl">Stratégies</div></div>
+    </div>
+    ${p.email?`<div style="font-size:.72rem;color:var(--soft);margin-bottom:11px;">📧 ${p.email}</div>`:''}
+    ${p.desc?`<div style="margin-bottom:13px;"><div class="slbl">Présentation</div><div style="font-size:.75rem;color:var(--soft);line-height:1.65;background:var(--blush);padding:10px 11px;border-radius:9px;border:1px solid var(--border);">${p.desc}</div></div>`:''}
+
+    <!-- IA COPY -->
+    <div class="aibox">
+      <div class="ait">🤖 IA Copy Stratégique</div>
+      <div class="aid">Génère un prompt ultra-personnalisé basé sur toute la fiche de ce prospect.</div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;">
+        <button class="aibtn" onclick="genPrompt(${p.id})">✨ Générer le prompt prospection</button>
+        <button class="aibtn green" onclick="genContentAnalysis(${p.id})">📊 Analyser son contenu</button>
+        <button class="aibtn blue" onclick="genConcurAnalysis(${p.id})">🔍 Analyser la concurrence</button>
+      </div>
+      <div class="airesult" id="air"></div>
+      <button class="aicopy" id="aicp" onclick="copyAI()">📋 Copier le prompt</button>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab${aTab==='timeline'?' active':''}" onclick="swTab('timeline')">📅 Historique</div>
+      <div class="tab${aTab==='networks'?' active':''}" onclick="swTab('networks')">🌐 Réseaux (${nets.length})</div>
+      <div class="tab${aTab==='email'?' active':''}" onclick="swTab('email')">📧 Email Marketing</div>
+      <div class="tab${aTab==='tunnels'?' active':''}" onclick="swTab('tunnels')">🎯 Ads & Tunnels</div>
+      <div class="tab${aTab==='mindmap'?' active':''}" onclick="swTab('mindmap')">🗺️ Mind Map</div>
+      <div class="tab${aTab==='concur'?' active':''}" onclick="swTab('concur')">🔍 Concurrence</div>
+      <div class="tab${aTab==='strategies'?' active':''}" onclick="swTab('strategies')">🎯 Stratégies (${strats.length})</div>
+      <div class="tab${aTab==='docs'?' active':''}" onclick="swTab('docs')">📎 Docs (${docs.length})</div>
+      <div class="tab${aTab==='exemples'?' active':''}" onclick="swTab('exemples')">✍️ Exemples</div>
+      <div class="tab${aTab==='notes'?' active':''}" onclick="swTab('notes')">🗒 Notes</div>
+    </div>
+
+    <!-- HISTORIQUE -->
+    <div class="tp${aTab==='timeline'?' active':''}">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:10px;">
+        <select id="tl-type" style="flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:.7rem;background:var(--blush);outline:none;color:var(--text);"><option value="email">📧 Email</option><option value="relance">🔔 Relance</option><option value="réponse">💬 Réponse reçue</option><option value="note">📝 Note</option></select>
+        <button class="cbtn" style="background:linear-gradient(135deg,var(--rose),var(--rose-deep));color:white;" onclick="openTlM(${p.id})">+ Ajouter</button>
+      </div>
+      ${p.timeline.length===0?`<div style="text-align:center;padding:20px;color:var(--soft);font-size:.74rem;"><div style="font-size:20px;margin-bottom:4px;">📭</div>Aucun contact</div>`:
+      `<div class="tl">${p.timeline.map(t=>`
+        <div class="tli"><div class="tld">${t.type==='email'?'📧':t.type==='relance'?'🔔':t.type==='réponse'?'💬':'📝'}</div>
+        <div class="tlc"><div class="tldt">${t.date}</div>
+        <div class="tlcard"><div class="tltit"><span>${t.subject||t.type}</span><div class="sb2 s-${t.type==='réponse'?'réponse':t.type==='relance'?'relance':'envoyé'}" style="font-size:.56rem;">${t.type}</div></div>
+        <div class="tlbody">${t.content||'—'}</div>${t.why?`<div class="tlwhy">💡 <span>${t.why}</span></div>`:''}</div></div></div>`).join('')}</div>`}
+    </div>
+
+    <!-- RÉSEAUX -->
+    <div class="tp${aTab==='networks'?' active':''}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+        <button class="cbtn" style="background:linear-gradient(135deg,var(--lav),#b8a8d8);color:#4a3870;" onclick="openNM(${p.id})">+ Ajouter un réseau</button>
+      </div>
+      ${nets.length===0?`<div style="text-align:center;padding:20px;color:var(--soft);font-size:.74rem;"><div style="font-size:20px;margin-bottom:4px;">🌐</div>Aucun réseau · Ajoute Instagram, TikTok, YouTube...</div>`:
+      nets.map((n,i)=>`<div class="netcard">
+        <div class="nh"><div class="nico">${NI[n.platform]||'🌐'}</div>
+        <div style="flex:1;"><div style="font-size:.8rem;font-weight:500;color:var(--text);">${n.platform}</div>
+        <div style="font-size:.68rem;color:var(--soft);">${n.handle||'—'} ${n.link?`· <a href="${n.link}" target="_blank" style="color:var(--rose-deep);font-size:.64rem;">Voir ↗</a>`:''}</div></div>
+        <button onclick="delNet(${p.id},${i})" style="background:none;border:none;color:var(--soft);cursor:pointer;font-size:11px;opacity:.5;">✕</button></div>
+        <div class="nstats"><span class="nst">👥 ${n.followers||'?'} abonnés</span><span class="nst">📅 ${n.freq||'?'} posts/${n.ftype||'semaine'}</span></div>
+        ${n.bio?`<div class="nbio">${n.bio}</div>`:''}</div>`).join('')}
+    </div>
+
+    <!-- EMAIL MARKETING -->
+    <div class="tp${aTab==='email'?' active':''}">
+      <div style="display:flex;gap:6px;justify-content:flex-end;margin-bottom:10px;flex-wrap:wrap;">
+        <button class="cbtn" style="background:linear-gradient(135deg,#e8a0b0,#c88090);color:white;" onclick="openEM(${p.id})">⚙️ Modifier infos email</button>
+        <button class="cbtn" style="background:linear-gradient(135deg,var(--sage),var(--sage-deep));color:white;" onclick="openEMemo(${p.id})">+ Ajouter email reçu</button>
+      </div>
+      ${p.emailMarketing?`
+      <div class="em-grid">
+        <div class="em-field"><div class="em-label">Newsletter</div><div class="em-val">${p.emailMarketing.has==='oui'?'✅ Oui':p.emailMarketing.has==='non'?'❌ Non':'❓ Inconnu'}</div></div>
+        <div class="em-field"><div class="em-label">Fréquence</div><div class="em-val">${p.emailMarketing.freq||'—'}</div></div>
+        <div class="em-field"><div class="em-label">Types d'emails</div><div class="em-val">${p.emailMarketing.types||'—'}</div></div>
+        <div class="em-field"><div class="em-label">Email de bienvenue</div><div class="em-val">${p.emailMarketing.welcome==='oui'?'✅ Oui':p.emailMarketing.welcome==='non'?'❌ Non':'❓'}</div></div>
+        <div class="em-field"><div class="em-label">Séquence bienvenue</div><div class="em-val">${p.emailMarketing.seq==='oui'?'✅ Oui ('+( p.emailMarketing.seqcount||'?')+' emails)':p.emailMarketing.seq==='non'?'❌ Non':'❓'}</div></div>
+      </div>
+      ${p.emailMarketing.notes?`<div style="background:var(--blush);border:1px solid var(--border);border-radius:9px;padding:10px;font-size:.74rem;color:var(--soft);line-height:1.6;margin-bottom:12px;">${p.emailMarketing.notes}</div>`:''}`:
+      `<div style="text-align:center;padding:16px;color:var(--soft);font-size:.74rem;background:var(--blush);border-radius:10px;margin-bottom:12px;">Aucune info email · Clique sur "Modifier infos email" ☝️</div>`}
+      
+      ${emailMemos.length>0?`<div class="slbl">Emails reçus (${emailMemos.length})</div>${emailMemos.map(m=>`
+        <div class="email-memo">
+          <div class="email-memo-header"><div class="email-memo-from">📨 ${m.subject||'Email reçu'}</div><div class="email-memo-date">${m.date||''}</div></div>
+          <div class="email-memo-body">${m.body||''}</div>
+          ${m.obs?`<div style="margin-top:7px;padding-top:7px;border-top:1px solid var(--border);font-size:.68rem;color:var(--rose-deep);font-style:italic;">💡 ${m.obs}</div>`:''}
+        </div>`).join('')}`:'<div style="text-align:center;padding:14px;color:var(--soft);font-size:.72rem;">Aucun email reçu enregistré · Clique sur "+ Ajouter email reçu" pour les archiver 📨</div>'}
+    </div>
+
+    <!-- ADS & TUNNELS -->
+    <div class="tp${aTab==='tunnels'?' active':''}">
+      <div style="display:flex;gap:6px;justify-content:flex-end;margin-bottom:10px;flex-wrap:wrap;">
+        <button class="cbtn" style="background:linear-gradient(135deg,#e8b060,#c89040);color:white;" onclick="openAds(${p.id})">⚙️ Ads</button>
+        <button class="cbtn" style="background:linear-gradient(135deg,var(--rose),var(--rose-deep));color:white;" onclick="openTu(${p.id})">+ Ajouter une page</button>
+      </div>
+      ${p.ads?`<div style="background:var(--blush);border:1px solid var(--border);border-radius:9px;padding:10px;margin-bottom:12px;font-size:.75rem;color:var(--text);">
+        📣 Fait des ads : <strong>${p.ads.has==='oui'?'Oui ✅':p.ads.has==='non'?'Non ❌':'Inconnu ❓'}</strong>
+        ${p.ads.has==='oui'?` · Type : ${p.ads.type||'?'} · Plateforme : ${p.ads.platform||'?'}`:''}
+        ${p.ads.notes?`<div style="margin-top:5px;font-size:.71rem;color:var(--soft);">${p.ads.notes}</div>`:''}
+      </div>`:`<div style="text-align:center;padding:10px;color:var(--soft);font-size:.72rem;background:var(--blush);border-radius:9px;margin-bottom:10px;">Infos ads non renseignées · Clique sur "⚙️ Ads"</div>`}
+      ${tunnels.length===0?`<div style="text-align:center;padding:16px;color:var(--soft);font-size:.74rem;">Aucune page ajoutée · VSL, Landing page, Page de vente...</div>`:
+      tunnels.map((tu,ti)=>`<div class="tunnel-card">
+        <div class="tunnel-header">
+          <div class="tunnel-icon">${TUI[tu.type]||'🔗'}</div>
+          <div style="flex:1;">
+            <div class="tunnel-name">${tu.name||tu.type}</div>
+            <div class="tunnel-type">${tu.type}</div>
+            ${tu.link?`<a href="${tu.link}" target="_blank" class="tunnel-link">🔗 Ouvrir la page ↗</a>`:''}
+          </div>
+          <button onclick="delTunnel(${p.id},${ti})" style="background:none;border:none;color:var(--soft);cursor:pointer;font-size:11px;opacity:.5;">✕</button>
+        </div>
+        ${tu.content?`<div class="tunnel-notes">${tu.content}</div>`:''}
+        <div class="tunnel-ai">
+          <button class="aibtn" style="font-size:.68rem;padding:5px 10px;" onclick="genPageAnalysis(${p.id},${ti})">🤖 Analyser & Améliorer cette page</button>
+          <div class="airesult" id="air-tu-${ti}"></div>
+          <button class="aicopy" id="aicp-tu-${ti}" onclick="copyAITu(${ti})">📋 Copier</button>
+        </div>
+      </div>`).join('')}
+    </div>
+
+    <!-- MIND MAP INTERACTIVE -->
+    <div class="tp${aTab==='mindmap'?' active':''}">
+      <div class="mm-wrap">
+        <div class="mm-toolbar">
+          <span style="font-size:.72rem;color:var(--soft);margin-right:4px;">🗺️</span>
+          <button class="mm-tb" onclick="mmAddNode(${p.id})">+ Bulle</button>
+          <button class="mm-tb" id="mm-link-btn-${p.id}" onclick="mmToggleLink(${p.id})">🔗 Relier</button>
+          <button class="mm-tb del" onclick="mmDeleteSel(${p.id})">🗑 Supprimer</button>
+          <button class="mm-tb" onclick="mmReset(${p.id})">↺ Reset vue</button>
+          <span style="font-size:.68rem;color:var(--soft);margin-left:auto;">Maintiens pour déplacer · Clique pour sélectionner</span>
+        </div>
+        <div class="mm-stage" id="mm-${p.id}" onclick="mmBgClick(event,${p.id})">
+          <svg class="mm-svg" id="mm-svg-${p.id}"></svg>
+        </div>
+      </div>
+      <div class="mm-popup" id="mm-popup-${p.id}"></div>
+    </div>
+
+    <!-- CONCURRENCE -->
+    <div class="tp${aTab==='concur'?' active':''}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+        <button class="cbtn" style="background:linear-gradient(135deg,#6a8ac8,#4a6aa8);color:white;" onclick="openConcur(${p.id})">⚙️ Modifier l'analyse</button>
+      </div>
+      ${p.concur?`
+      <div class="concur-card">
+        <div class="concur-label">Copywriter actuel</div>
+        <div style="font-size:.76rem;color:var(--text);margin-bottom:10px;">${p.concur.hasCopy==='oui'?'✅ A un copywriter':p.concur.hasCopy==='non'?'❌ Pas de copywriter':'❓ Inconnu'}</div>
+        ${p.concur.qual?`<div class="concur-label">Qualité du copy actuel</div><div style="font-size:.8rem;margin-bottom:10px;">${p.concur.qual}</div>`:''}
+        ${p.concur.comp?`<div class="concur-label">Concurrents identifiés</div><div style="font-size:.74rem;color:var(--soft);margin-bottom:10px;">${p.concur.comp}</div>`:''}
+        ${p.concur.pos?`<div class="concur-label">Positionnement</div><div style="font-size:.74rem;color:var(--soft);margin-bottom:10px;">${p.concur.pos}</div>`:''}
+        ${p.concur.opps?`<div class="concur-label" style="color:var(--rose-deep);">Opportunités 🌟</div><div style="font-size:.74rem;color:var(--text);line-height:1.6;">${p.concur.opps}</div>`:''}
+      </div>`:
+      `<div style="text-align:center;padding:20px;color:var(--soft);font-size:.74rem;background:var(--blush);border-radius:10px;">Analyse concurrence non renseignée · Clique sur "⚙️ Modifier l'analyse"</div>`}
+    </div>
+
+    <!-- STRATÉGIES -->
+    <div class="tp${aTab==='strategies'?' active':''}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+        <button class="cbtn" style="background:linear-gradient(135deg,var(--rose),var(--rose-deep));color:white;" onclick="openSM(${p.id})">+ Nouvelle stratégie</button>
+      </div>
+      ${strats.length===0?`<div style="text-align:center;padding:20px;color:var(--soft);font-size:.74rem;">Aucune stratégie définie</div>`:
+      strats.map(s=>`<div class="stratblock">
+        <div class="strathead"><span>🎯 ${s.title}</span><button onclick="delStrat(${p.id},${s.id})" class="bdel">Supprimer</button></div>
+        <div class="sgrid">
+          ${s.pain?`<div class="sfield"><div class="sflbl">🎯 Points de douleur</div><div class="sfval">${s.pain}</div></div>`:''}
+          ${s.value?`<div class="sfield"><div class="sflbl">💎 Valeur</div><div class="sfval">${s.value}</div></div>`:''}
+          ${s.angle?`<div class="sfield"><div class="sflbl">📌 Angle</div><div class="sfval">${s.angle}</div></div>`:''}
+          ${s.prx?`<div class="sfield"><div class="sflbl">⚡ Principes</div><div class="sfval">${s.prx}</div></div>`:''}
+        </div></div>`).join('')}
+    </div>
+
+    <!-- DOCUMENTS -->
+    <div class="tp${aTab==='docs'?' active':''}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+        <button class="cbtn" style="background:linear-gradient(135deg,var(--sage),var(--sage-deep));color:white;" onclick="openDM(${p.id})">+ Ajouter un document</button>
+      </div>
+      ${docs.length===0?`<div style="text-align:center;padding:20px;color:var(--soft);font-size:.74rem;">Aucun document</div>`:
+      docs.map(d=>`<div class="docitem">
+        <div style="font-size:17px;flex-shrink:0;margin-top:1px;">${d.type?.split(' ')[0]||'📝'}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.77rem;font-weight:500;color:var(--text);">${d.name}</div>
+          <div style="font-size:.64rem;color:var(--soft);">${d.type||'Document'} · ${d.date||''}</div>
+          ${d.content?`<div style="font-size:.7rem;color:var(--soft);margin-top:3px;line-height:1.5;">${d.content.substring(0,130)}${d.content.length>130?'...':''}</div>`:''}
+        </div>
+        <button onclick="delDoc(${p.id},${d.id})" style="background:none;border:none;color:var(--soft);cursor:pointer;font-size:11px;opacity:.5;flex-shrink:0;">✕</button>
+      </div>`).join('')}
+    </div>
+
+    <!-- EXEMPLES -->
+    <div class="tp${aTab==='exemples'?' active':''}">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+        <button class="cbtn" style="background:linear-gradient(135deg,var(--sage),var(--sage-deep));color:white;" onclick="openExM(${p.id})">+ Ajouter un exemple</button>
+      </div>
+      ${(p.exemples||[]).length===0?`<div style="text-align:center;padding:20px;color:var(--soft);font-size:.74rem;">Aucun exemple</div>`:
+      p.exemples.map(e=>`<div style="background:var(--blush);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:7px;">
+        <div style="font-size:.76rem;font-weight:500;color:var(--text);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;"><span>${e.title}</span><span style="font-size:.61rem;padding:2px 7px;border-radius:20px;background:var(--sage);color:#3a5a32;">${e.type}</span></div>
+        <div style="font-size:.72rem;color:var(--soft);line-height:1.6;font-style:italic;white-space:pre-wrap;">${e.content}</div>
+      </div>`).join('')}
+    </div>
+
+    <!-- NOTES -->
+    <div class="tp${aTab==='notes'?' active':''}">
+      <div class="slbl">Notes libres</div>
+      <textarea class="na" placeholder="Tout ce que tu veux noter... 🌸" onchange="saveNotes(${p.id},this.value)">${p.notes||''}</textarea>
+
+```
+  <div style="margin-top:12px;"><div class="slbl" style="margin-bottom:7px;">Changer le statut</div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;">
+      ${['nouveau','envoyé','relance','réponse','refus'].map(s=>`<button onclick="chStatus(${p.id},'${s}')" style="padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:${p.status===s?'var(--rose)':'var(--blush)'};color:${p.status===s?'white':'var(--soft)'};font-family:'DM Sans',sans-serif;font-size:.7rem;cursor:pointer;transition:all .15s;">${s}</button>`).join('')}
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>`;
+
+// Render mind map after DOM
+if(aTab===‘mindmap’) setTimeout(()=>mmInit(p),120);
+}
+
+function swTab(t){aTab=t;renderFiche();}
+
+// ══════════════════════════════════
+// ══════════════════════════════════
+// MIND MAP INTERACTIVE
+// ══════════════════════════════════
+const mmState={}; // per prospect
+
+function mmGetState(pid){
+if(!mmState[pid]) mmState[pid]={nodes:[],links:[],selId:null,linkMode:false,dragging:null,linkSrc:null};
+return mmState[pid];
+}
+
+function mmSave(pid){
+const p=prospects.find(x=>x.id===pid);
+if(!p)return;
+const st=mmGetState(pid);
+p.mindmap={nodes:st.nodes,links:st.links};
+upP(p);
+}
+
+function mmInit(p){
+const stage=document.getElementById(`mm-${p.id}`);
+if(!stage)return;
+const st=mmGetState(p.id);
+
+// Load saved or build default nodes from prospect data
+if(p.mindmap?.nodes?.length){
+st.nodes=[…p.mindmap.nodes];
+st.links=[…p.mindmap.links];
+} else {
+st.nodes=[];st.links=[];
+const w=stage.offsetWidth||400,h=440;
+const cx=w/2,cy=h/2;
+// Center
+st.nodes.push({id:‘center’,label:p.name.substring(0,16),x:cx-50,y:cy-25,bg:‘linear-gradient(135deg,’+p.color[0]+’,’+p.color[1]+’)’,color:‘white’,tab:null,fixed:false});
+// Networks
+(p.networks||[]).slice(0,3).forEach((n,i)=>{
+const angle=(-60+i*60)*Math.PI/180;
+st.nodes.push({id:‘net-’+i,label:(NI[n.platform]||‘🌐’)+’ ‘+n.platform+’\n’+n.followers+’ abonnés’,x:cx-50+Math.cos(angle)*160,y:cy-25+Math.sin(angle)*110,bg:’#f0f8ff’,color:’#3a2e35’,tab:‘networks’});
+st.links.push({from:‘center’,to:‘net-’+i});
+});
+// Email
+if(p.emailMarketing&&Object.keys(p.emailMarketing).length){
+st.nodes.push({id:‘email’,label:‘📧 Email Mktg\n’+(p.emailMarketing.hasNewsletter?‘Newsletter ✅’:‘Pas de NL’),x:cx+120,y:cy-120,bg:’#f0faf4’,color:’#1a5a32’,tab:‘email’});
+st.links.push({from:‘center’,to:‘email’});
+}
+// Tunnels
+(p.tunnels||[]).slice(0,2).forEach((t,i)=>{
+st.nodes.push({id:‘tun-’+i,label:‘🔗 ‘+t.type+’\n’+(t.title||’’).substring(0,14),x:cx+100+i*20,y:cy+80+i*60,bg:’#fff8f0’,color:’#8a4010’,tab:‘tunnels’});
+st.links.push({from:‘center’,to:‘tun-’+i});
+});
+// Strategies
+if((p.strategies||[]).length){
+st.nodes.push({id:‘strat’,label:‘🎯 Stratégies\n’+(p.strategies.length)+’ définie’+(p.strategies.length>1?‘s’:’’),x:cx-160,y:cy+80,bg:’#f5f0fd’,color:’#4a2070’,tab:‘strategies’});
+st.links.push({from:‘center’,to:‘strat’});
+}
+}
+mmRender(p.id);
+}
+
+function mmRender(pid){
+const stage=document.getElementById(`mm-${pid}`);
+const svg=document.getElementById(`mm-svg-${pid}`);
+if(!stage||!svg)return;
+const st=mmGetState(pid);
+
+// Draw links in SVG
+svg.innerHTML=st.links.map(lk=>{
+const from=st.nodes.find(n=>n.id===lk.from);
+const to=st.nodes.find(n=>n.id===lk.to);
+if(!from||!to)return’’;
+const x1=from.x+65,y1=from.y+25,x2=to.x+65,y2=to.y+25;
+return`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#eedde4" stroke-width="2.5" stroke-dasharray="6,3" stroke-linecap="round"/>`;
+}).join(’’);
+
+// Remove old nodes
+stage.querySelectorAll(’.mm-node’).forEach(el=>el.remove());
+
+// Render nodes
+st.nodes.forEach(node=>{
+const el=document.createElement(‘div’);
+el.className=‘mm-node’+(st.selId===node.id?’ sel’:’’)+(st.linkSrc===node.id?’ link-src’:’’);
+el.id=`mm-node-${pid}-${node.id}`;
+el.style.cssText=`left:${node.x}px;top:${node.y}px;background:${node.bg||'var(--white)'};color:${node.color||'var(--text)'};border-color:${node.tab?'var(--border)':'transparent'};white-space:pre-line;`;
+el.innerHTML=node.label;
+
+```
+// Delete btn
+const del=document.createElement('button');
+del.className='mm-node-del';del.textContent='✕';
+del.onclick=(e)=>{e.stopPropagation();mmDelNode(pid,node.id);};
+el.appendChild(del);
+
+// Link btn
+const lnk=document.createElement('button');
+lnk.className='mm-node-lnk';lnk.textContent='🔗';
+lnk.onclick=(e)=>{e.stopPropagation();mmStartLink(pid,node.id);};
+el.appendChild(lnk);
+
+// Click = select / open popup
+el.addEventListener('click',(e)=>{
+  e.stopPropagation();
+  if(st.linkMode&&st.linkSrc&&st.linkSrc!==node.id){
+    // Complete link
+    const exists=st.links.find(l=>(l.from===st.linkSrc&&l.to===node.id)||(l.from===node.id&&l.to===st.linkSrc));
+    if(!exists) st.links.push({from:st.linkSrc,to:node.id});
+    st.linkMode=false;st.linkSrc=null;
+    const btn=document.getElementById(`mm-link-btn-${pid}`);
+    if(btn)btn.classList.remove('on');
+    mmSave(pid);mmRender(pid);return;
+  }
+  st.selId=node.id;
+  mmRender(pid);
+  if(node.tab) mmShowPopup(pid,node);
+});
+
+// Drag
+let dragStart=null,nodeStart=null;
+const onMove=(ex,ey)=>{
+  if(!dragStart)return;
+  node.x=nodeStart.x+(ex-dragStart.x);
+  node.y=nodeStart.y+(ey-dragStart.y);
+  el.style.left=node.x+'px';el.style.top=node.y+'px';
+  mmRenderLinks(pid);
+};
+// Mouse
+el.addEventListener('mousedown',(e)=>{
+  if(e.target!==el)return;
+  e.preventDefault();
+  dragStart={x:e.clientX,y:e.clientY};nodeStart={x:node.x,y:node.y};
+  const up=()=>{if(dragStart){dragStart=null;mmSave(pid);}document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+  const mv=(e)=>onMove(e.clientX,e.clientY);
+  document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+});
+// Touch
+el.addEventListener('touchstart',(e)=>{
+  if(e.target!==el)return;
+  const t=e.touches[0];
+  dragStart={x:t.clientX,y:t.clientY};nodeStart={x:node.x,y:node.y};
+  const up=()=>{if(dragStart){dragStart=null;mmSave(pid);}el.removeEventListener('touchmove',mv);el.removeEventListener('touchend',up);};
+  const mv=(e)=>{e.preventDefault();const t=e.touches[0];onMove(t.clientX,t.clientY);};
+  el.addEventListener('touchmove',mv,{passive:false});
+  el.addEventListener('touchend',up);
+});
+
+stage.appendChild(el);
+```
+
+});
+}
+
+function mmRenderLinks(pid){
+const svg=document.getElementById(`mm-svg-${pid}`);
+const st=mmGetState(pid);
+if(!svg)return;
+svg.innerHTML=st.links.map(lk=>{
+const from=st.nodes.find(n=>n.id===lk.from);
+const to=st.nodes.find(n=>n.id===lk.to);
+if(!from||!to)return’’;
+return`<line x1="${from.x+65}" y1="${from.y+25}" x2="${to.x+65}" y2="${to.y+25}" stroke="#eedde4" stroke-width="2.5" stroke-dasharray="6,3" stroke-linecap="round"/>`;
+}).join(’’);
+}
+
+function mmShowPopup(pid,node){
+const popup=document.getElementById(`mm-popup-${pid}`);
+if(!popup)return;
+const p=prospects.find(x=>x.id===pid);
+if(!p)return;
+let content=’’;
+if(node.tab===‘networks’){
+const idx=parseInt(node.id.split(’-’)[1]);
+const n=(p.networks||[])[idx];
+if(n) content=`<strong>${n.platform} — ${n.handle||'?'}</strong><br>👥 ${n.followers||'?'} abonnés<br>📅 ${n.freq||'?'} posts/${n.ftype||'semaine'}<br>${n.bio?'<br>'+n.bio.substring(0,80)+'...':''}`;
+} else if(node.tab===‘email’){
+const em=p.emailMarketing||{};
+content=`<strong>📧 Email Marketing</strong><br>Newsletter : ${em.hasNewsletter?'✅ Oui':'❌ Non'}<br>Fréquence : ${em.freq||'?'}/semaine<br>Abonnés : ${em.subs||'?'}<br>Séquence : ${em.hasSeq?'✅ Oui':'❌ Non'}`;
+} else if(node.tab===‘tunnels’){
+const idx=parseInt(node.id.split(’-’)[1]);
+const t=(p.tunnels||[])[idx];
+if(t) content=`<strong>${t.type}</strong><br>${t.title||''}<br>${t.link?'<a href="'+t.link+'" target="_blank" style="color:var(--rose-deep);">Voir la page ↗</a>':''}${t.desc?'<br><br>'+t.desc.substring(0,100):''}`;
+} else if(node.tab===‘strategies’){
+content=`<strong>🎯 Stratégies (${(p.strategies||[]).length})</strong><br>${(p.strategies||[]).map(s=>'· '+s.title).join('<br>')}`;
+}
+if(!content){popup.classList.remove(‘on’);return;}
+popup.innerHTML=content+`<br><button onclick="swTab('${node.tab}');document.getElementById('mm-popup-${pid}').classList.remove('on');" style="margin-top:8px;padding:4px 10px;background:var(--rose);color:white;border:none;border-radius:7px;font-size:.68rem;cursor:pointer;">Voir l'onglet →</button><button onclick="this.parentNode.classList.remove('on')" style="margin-top:8px;margin-left:6px;padding:4px 10px;background:var(--blush);color:var(--soft);border:1px solid var(--border);border-radius:7px;font-size:.68rem;cursor:pointer;">✕</button>`;
+popup.classList.add(‘on’);
+// Position near center of screen
+popup.style.top=‘50%’;popup.style.left=‘50%’;popup.style.transform=‘translate(-50%,-60%)’;
+}
+
+function mmBgClick(e,pid){
+const st=mmGetState(pid);
+if(e.target.id===`mm-${pid}`||e.target.tagName===‘svg’||e.target.tagName===‘line’){
+st.selId=null;st.linkMode=false;st.linkSrc=null;
+const btn=document.getElementById(`mm-link-btn-${pid}`);
+if(btn)btn.classList.remove(‘on’);
+mmRender(pid);
+const popup=document.getElementById(`mm-popup-${pid}`);
+if(popup)popup.classList.remove(‘on’);
+}
+}
+
+function mmAddNode(pid){
+const st=mmGetState(pid);
+const stage=document.getElementById(`mm-${pid}`);
+const w=stage?stage.offsetWidth:400;
+const id=‘custom-’+Date.now();
+const label=prompt(‘Nom de la bulle :’)||‘Nouvelle bulle’;
+st.nodes.push({id,label,x:w/2-50,y:180,bg:‘var(–white)’,color:‘var(–text)’,tab:null});
+mmSave(pid);mmRender(pid);
+}
+
+function mmDelNode(pid,nodeId){
+const st=mmGetState(pid);
+st.nodes=st.nodes.filter(n=>n.id!==nodeId);
+st.links=st.links.filter(l=>l.from!==nodeId&&l.to!==nodeId);
+if(st.selId===nodeId)st.selId=null;
+mmSave(pid);mmRender(pid);
+}
+
+function mmDeleteSel(pid){
+const st=mmGetState(pid);
+if(!st.selId)return;
+mmDelNode(pid,st.selId);
+}
+
+function mmToggleLink(pid){
+const st=mmGetState(pid);
+st.linkMode=!st.linkMode;
+st.linkSrc=null;
+const btn=document.getElementById(`mm-link-btn-${pid}`);
+if(btn)btn.classList.toggle(‘on’,st.linkMode);
+if(st.linkMode)toast(‘Sélectionne la 1ère bulle à relier 🔗’);
+}
+
+function mmStartLink(pid,nodeId){
+const st=mmGetState(pid);
+st.linkMode=true;st.linkSrc=nodeId;
+const btn=document.getElementById(`mm-link-btn-${pid}`);
+if(btn)btn.classList.add(‘on’);
+st.selId=nodeId;
+mmRender(pid);
+toast(‘Clique maintenant sur la 2ème bulle à relier 🔗’);
+}
+
+function mmReset(pid){
+const st=mmGetState(pid);
+st.nodes=[];st.links=[];
+const p=prospects.find(x=>x.id===pid);
+if(p){p.mindmap=null;upP(p);}
+mmInit(p);
+}
+
+// ══════════════════════════════════
+// GENERATE APP ICON (PNG via Canvas)
+// ══════════════════════════════════
+(function generateIcon(){
+try{
+const c=document.createElement(‘canvas’);c.width=180;c.height=180;
+const ctx=c.getContext(‘2d’);
+// Background gradient
+const g=ctx.createLinearGradient(0,0,180,180);
+g.addColorStop(0,’#fdf0f3’);g.addColorStop(1,’#f2c4ce’);
+// Rounded rect
+ctx.beginPath();ctx.moveTo(40,0);ctx.arcTo(180,0,180,180,40);ctx.arcTo(180,180,0,180,40);ctx.arcTo(0,180,0,0,40);ctx.arcTo(0,0,180,0,40);ctx.closePath();
+ctx.fillStyle=g;ctx.fill();
+// Petals
+const cx=90,cy=72;
+const petals=[[’#e8a0b0’,.8],[’#d4cce8’,.6],[’#e8a0b0’,.8],[’#d4cce8’,.6],[’#e8a0b0’,.8],[’#d4cce8’,.6],[’#e8a0b0’,.8],[’#d4cce8’,.6]];
+petals.forEach(([col,op],i)=>{
+ctx.save();ctx.translate(cx,cy);ctx.rotate(i*Math.PI/4);
+ctx.globalAlpha=op;ctx.fillStyle=col;
+ctx.beginPath();ctx.ellipse(0,-15,10,24,0,0,Math.PI*2);ctx.fill();
+ctx.restore();
+});
+ctx.globalAlpha=1;
+// Center white circle
+ctx.beginPath();ctx.arc(cx,cy,14,0,Math.PI*2);ctx.fillStyle=‘white’;ctx.fill();
+// Center pink dot
+ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);ctx.fillStyle=’#e8a0b0’;ctx.fill();
+// Text
+ctx.fillStyle=’#7a6472’;ctx.globalAlpha=.9;ctx.font=‘italic 18px Georgia,serif’;
+ctx.textAlign=‘center’;ctx.fillText(‘studio copy’,90,148);
+// Set icon
+const link=document.getElementById(‘appIcon’);
+if(link)link.href=c.toDataURL(‘image/png’);
+}catch(e){}
+})();
+// ══════════════════════════════════
+function showAI(content){
+const box=document.getElementById(‘air’);
+const btn=document.getElementById(‘aicp’);
+if(box){box.textContent=content;box.classList.add(‘on’);}
+if(btn)btn.classList.add(‘on’);
+}
+
+function copyAI(){const b=document.getElementById(‘air’);if(b)navigator.clipboard.writeText(b.textContent).then(()=>toast(‘Prompt copié 🤖’));}
+function copyAITu(i){const b=document.getElementById(`air-tu-${i}`);if(b)navigator.clipboard.writeText(b.textContent).then(()=>toast(‘Prompt copié 🤖’));}
+
+function genPrompt(id){
+const p=prospects.find(x=>x.id===id);if(!p)return;
+const nets=(p.networks||[]).map(n=>`- ${n.platform} ${n.handle?'('+n.handle+')':''} : ${n.followers||'?'} abonnés, ${n.freq||'?'} posts/${n.ftype||'semaine'}${n.bio?'\n  Bio: '+n.bio:''}`).join(’\n’)||‘Non renseignés’;
+const strats=(p.strategies||[]).map(s=>`— "${s.title}" | Douleur: ${s.pain||'?'} | Valeur: ${s.value||'?'} | Angle: ${s.angle||'?'}`).join(’\n’)||‘Aucune’;
+const em=p.emailMarketing;
+const lastEmail=(p.timeline||[]).find(t=>t.type===‘email’);
+const prompt=`Tu es mon copywriter stratégique personnel. Voici la fiche complète de mon prospect :
+
+━━━ PROSPECT ━━━
+Nom : ${p.name} | Niche : ${p.niche||’?’} | Statut : ${p.status}
+Description : ${p.desc||‘non renseignée’}
+Email : ${p.email||’?’}
+
+━━━ RÉSEAUX ━━━
+${nets}
+
+━━━ EMAIL MARKETING ━━━
+Newsletter : ${em?.has||’?’} | Fréquence : ${em?.freq||’?’}
+Types d’emails : ${em?.types||’?’}
+Séquence bienvenue : ${em?.seq||’?’} (${em?.seqcount||’?’} emails)
+Email de bienvenue : ${em?.welcome||’?’}
+
+━━━ TUNNEL / PAGES ━━━
+${(p.tunnels||[]).map(t=>`- ${t.type} : ${t.name||'?'} | ${t.link||'pas de lien'}`).join(’\n’)||‘Non renseigné’}
+
+━━━ ADS ━━━
+${p.ads?`Fait des ads : ${p.ads.has} | Type : ${p.ads.type||'?'} | Plateforme : ${p.ads.platform||'?'}`:‘Non renseigné’}
+
+━━━ CONCURRENCE ━━━
+${p.concur?`Copy actuel : ${p.concur.hasCopy} | Qualité : ${p.concur.qual||'?'}\nOpportunités : ${p.concur.opps||'?'}`:‘Non analysée’}
+
+━━━ STRATÉGIES ENVISAGÉES ━━━
+${strats}
+
+━━━ DERNIER EMAIL ENVOYÉ ━━━
+${lastEmail?`"${lastEmail.subject}" — ${lastEmail.content?.substring(0,100)}...`:‘Aucun’}
+
+━━━ MES PRINCIPES COPY ━━━
+BAB/PAS, Micro-tension, Pattern Interrupt, One-Sentence Movie, Expansion du Désir, Slippery Slide, Value Lock, Dominance Silencieuse, Dépendance Narrative, Marketing qui Repousse.
+
+━━━ MA DEMANDE ━━━
+
+1. Les 3 meilleurs angles d’approche pour ce prospect
+1. Un email de prospection ultra-personnalisé (objet + corps complet)
+1. Les 2-3 principes copy les plus adaptés ici et pourquoi
+1. Une stratégie de relance si pas de réponse sous 3 jours`;
+   showAI(prompt);
+   }
+
+function genContentAnalysis(id){
+const p=prospects.find(x=>x.id===id);if(!p)return;
+const memos=(p.emailMemos||[]).map(m=>`Email "${m.subject||'?'}" :\n${m.body?.substring(0,200)||'?'}`).join(’\n\n’)||‘Aucun email archivé’;
+const nets=(p.networks||[]).map(n=>`${n.platform} (${n.followers||'?'} abonnés) - Bio: ${n.bio||'?'}`).join(’\n’)||‘Non renseignés’;
+const prompt=`Tu es un expert en copywriting. Analyse le style de contenu de ce créateur :
+
+━━━ CRÉATEUR ━━━
+Nom : ${p.name} | Niche : ${p.niche||’?’}
+
+━━━ RÉSEAUX ━━━
+${nets}
+
+━━━ EMAILS ARCHIVÉS ━━━
+${memos}
+
+━━━ MA DEMANDE ━━━
+
+1. Quel est le style d’écriture de ce créateur ? (ton, vocabulaire, structure)
+1. Quels sont ses points forts en copywriting ?
+1. Quels sont ses points faibles / angles non exploités ?
+1. Comment adapter MON style pour lui ressembler dans ma prospection ?
+1. Quel type de copywriter je devrais me présenter comme pour matcher avec lui ?`;
+   showAI(prompt);
+   }
+
+function genConcurAnalysis(id){
+const p=prospects.find(x=>x.id===id);if(!p)return;
+const prompt=`Tu es un expert en positionnement et copywriting. Aide-moi à analyser la concurrence de ce prospect :
+
+━━━ PROSPECT ━━━
+Nom : ${p.name} | Niche : ${p.niche||’?’}
+${p.concur?`Copwriters actuels : ${p.concur.hasCopy} | Concurrents : ${p.concur.comp||'?'}\nPositionnement : ${p.concur.pos||'?'}` : ‘Concurrence non analysée’}
+
+━━━ MA DEMANDE ━━━
+
+1. Quels sont ses principaux concurrents dans sa niche ?
+1. Comment se différencie-t-il (ou devrait-il se différencier) ?
+1. Quels angles copywriting ses concurrents n’exploitent pas encore ?
+1. Comment utiliser cette analyse pour ma prospection ?
+1. Quel est l’argument le plus fort pour lui montrer que j’ai fait mes recherches ?`;
+   showAI(prompt);
+   }
+
+function genPageAnalysis(pid,ti){
+const p=prospects.find(x=>x.id===pid);if(!p)return;
+const tu=p.tunnels[ti];if(!tu)return;
+const prompt=`Tu es un expert copywriter spécialisé dans l’optimisation de pages de vente.
+
+━━━ PAGE À ANALYSER ━━━
+Type : ${tu.type}
+Titre/Nom : ${tu.name||’?’}
+Lien : ${tu.link||’?’}
+Contenu actuel : ${tu.content||‘Non renseigné’}
+
+━━━ CONTEXTE ━━━
+Prospect : ${p.name} | Niche : ${p.niche||’?’}
+
+━━━ MA DEMANDE ━━━
+
+1. Analyse les points forts de cette page (si infos disponibles)
+1. Identifie les 5 points à améliorer en priorité
+1. Propose des reformulations concrètes pour le titre/accroche
+1. Quels éléments de copywriting manquent ? (preuve sociale, urgence, garantie…)
+1. Comment pourrait-on doubler le taux de conversion de cette page ?
+1. Quel est MON angle pour proposer mes services d’amélioration à ce prospect ?`;   const box=document.getElementById(`air-tu-${ti}`);   const btn=document.getElementById(`aicp-tu-${ti}`);
+   if(box){box.textContent=prompt;box.classList.add(‘on’);}
+   if(btn)btn.classList.add(‘on’);
+   }
+
+// ══════════════════════════════════
+// CRUD PROSPECTS
+// ══════════════════════════════════
+async function saveProspect(){
+const name=document.getElementById(‘fp-name’).value.trim();if(!name)return;
+const ci=prospects.length%COLS.length;
+const p={id:Date.now(),name,niche:document.getElementById(‘fp-niche’).value.trim(),status:document.getElementById(‘fp-status’).value,email:document.getElementById(‘fp-email’).value.trim(),desc:document.getElementById(‘fp-desc’).value.trim(),color:COLS[ci],networks:[],strategies:[],docs:[],timeline:[],exemples:[],emailMemos:[],tunnels:[],notes:’’,created:new Date().toLocaleDateString(‘fr-FR’)};
+const dbId=await cloudInsert(‘prospects’,p);if(dbId)p._dbId=dbId;
+prospects.push(p);closeM(‘m-prospect’);
+[‘fp-name’,‘fp-niche’,‘fp-email’,‘fp-desc’].forEach(id=>document.getElementById(id).value=’’);
+renderList();updateStats();selP(p.id);toast(‘Prospect ajouté ✨’);checkAlerts();
+}
+
+async function upP(p){await cloudSave(‘prospects’,p);saveL();}
+
+async function delP(id){
+if(!confirm(‘Supprimer ce prospect ?’))return;
+const p=prospects.find(x=>x.id===id);
+prospects=prospects.filter(x=>x.id!==id);
+if(p?._dbId)await cloudDel(‘prospects’,p._dbId);
+saveL();aId=null;renderList();updateStats();checkAlerts();
+document.getElementById(‘main’).innerHTML=`<div class="fiche"><div class="empty"><div class="ef">🌸</div><div class="et">Sélectionne un prospect</div></div></div>`;
+}
+
+// NETWORKS
+function openNM(id){curNP=id;openM(‘m-network’);}
+async function saveNetwork(){
+const p=prospects.find(x=>x.id===curNP);if(!p)return;
+p.networks.push({platform:document.getElementById(‘n-pl’).value,handle:document.getElementById(‘n-handle’).value.trim(),followers:document.getElementById(‘n-followers’).value.trim(),freq:document.getElementById(‘n-freq’).value.trim(),ftype:document.getElementById(‘n-ftype’).value,bio:document.getElementById(‘n-bio’).value.trim(),link:document.getElementById(‘n-link’).value.trim()});
+await upP(p);closeM(‘m-network’);[‘n-handle’,‘n-followers’,‘n-freq’,‘n-bio’,‘n-link’].forEach(id=>document.getElementById(id).value=’’);
+renderFiche();toast(‘Réseau ajouté ✨’);
+}
+async function delNet(pid,i){const p=prospects.find(x=>x.id===pid);if(!p)return;p.networks.splice(i,1);await upP(p);renderFiche();}
+
+// EMAIL MARKETING
+function openEM(id){curEMP=id;openM(‘m-email’);}
+async function saveEmail(){
+const p=prospects.find(x=>x.id===curEMP);if(!p)return;
+p.emailMarketing={has:document.getElementById(‘em-has’).value,freq:document.getElementById(‘em-freq’).value,types:document.getElementById(‘em-types’).value.trim(),welcome:document.getElementById(‘em-welcome’).value,seq:document.getElementById(‘em-seq’).value,seqcount:document.getElementById(‘em-seqcount’).value.trim(),notes:document.getElementById(‘em-notes’).value.trim()};
+await upP(p);closeM(‘m-email’);[‘em-types’,‘em-seqcount’,‘em-notes’].forEach(id=>document.getElementById(id).value=’’);
+renderFiche();toast(‘Infos email mises à jour ✨’);
+}
+
+// EMAIL MEMO
+function openEMemo(id){curEMP=id;document.getElementById(‘em-date’).value=new Date().toISOString().split(‘T’)[0];openM(‘m-emailmemo’);}
+async function saveEmailMemo(){
+const p=prospects.find(x=>x.id===curEMP);if(!p)return;
+if(!p.emailMemos)p.emailMemos=[];
+p.emailMemos.unshift({id:Date.now(),subject:document.getElementById(‘em-subject’).value.trim(),date:document.getElementById(‘em-date’).value?new Date(document.getElementById(‘em-date’).value).toLocaleDateString(‘fr-FR’):’’,body:document.getElementById(‘em-body’).value.trim(),obs:document.getElementById(‘em-obs’).value.trim()});
+await upP(p);closeM(‘m-emailmemo’);[‘em-subject’,‘em-body’,‘em-obs’].forEach(id=>document.getElementById(id).value=’’);
+renderFiche();toast(‘Email archivé 📨’);
+}
+
+// TUNNELS
+function openTu(id){curTuP=id;openM(‘m-tunnel’);}
+async function saveTunnel(){
+const p=prospects.find(x=>x.id===curTuP);if(!p)return;
+if(!p.tunnels)p.tunnels=[];
+p.tunnels.push({type:document.getElementById(‘tu-type’).value,name:document.getElementById(‘tu-name’).value.trim(),link:document.getElementById(‘tu-link’).value.trim(),content:document.getElementById(‘tu-content’).value.trim(),improve:document.getElementById(‘tu-improve’).value.trim()});
+await upP(p);closeM(‘m-tunnel’);[‘tu-name’,‘tu-link’,‘tu-content’,‘tu-improve’].forEach(id=>document.getElementById(id).value=’’);
+renderFiche();toast(‘Page ajoutée ✨’);
+}
+async function delTunnel(pid,i){const p=prospects.find(x=>x.id===pid);if(!p)return;p.tunnels.splice(i,1);await upP(p);renderFiche();}
+
+// ADS
+function openAds(id){curAP=id;openM(‘m-ads’);}
+async function saveAds(){
+const p=prospects.find(x=>x.id===curAP);if(!p)return;
+p.ads={has:document.getElementById(‘ads-has’).value,type:document.getElementById(‘ads-type’).value,platform:document.getElementById(‘ads-platform’).value.trim(),notes:document.getElementById(‘ads-notes’).value.trim()};
+await upP(p);closeM(‘m-ads’);[‘ads-platform’,‘ads-notes’].forEach(id=>document.getElementById(id).value=’’);
+renderFiche();toast(‘Infos ads mises à jour ✨’);
+}
+
+// CONCURRENCE
+function openConcur(id){curCP=id;openM(‘m-concur’);}
+async function saveConcur(){
+const p=prospects.find(x=>x.id===curCP);if(!p)return;
+p.concur={hasCopy:document.getElementById(‘cc-has’).value,qual:document.getElementById(‘cc-qual’).value,comp:document.getElementById(‘cc-comp’).value.trim(),pos:document.getElementById(‘cc-pos’).value.trim(),opps:document.getElementById(‘cc-opps’).value.trim()};
+await upP(p);closeM(‘m-concur’);[‘cc-comp’,‘cc-pos’,‘cc-opps’].forEach(id=>document.getElementById(id).value=’’);
+renderFiche();toast(‘Analyse concurrence mise à jour 🔍’);
+}
+
+// STRATEGY
+function openSM(id){curSP=id;openM(‘m-strategy’);}
+async function saveStrategy(){
+const p=prospects.find(x=>x.id===curSP);if(!p)return;
+if(!p.strategies)p.strategies=[];
+p.strategies.push({id:Date.now(),title:document.getElementById(‘s-title’).value.trim()||‘Stratégie ‘+(p.strategies.length+1),pain:document.getElementById(‘s-pain’).value.trim(),value:document.getElementById(‘s-value’).value.trim(),angle:document.getElementById(‘s-angle’).value.trim(),prx:document.getElementById(‘s-prx’).value.trim()});
+await upP(p);closeM(‘m-strategy’);[‘s-title’,‘s-pain’,‘s-value’,‘s-angle’,‘s-prx’].forEach(id=>document.getElementById(id).value=’’);
+renderFiche();toast(‘Stratégie créée 🎯’);
+}
+async function delStrat(pid,sid){const p=prospects.find(x=>x.id===pid);if(!p)return;p.strategies=p.strategies.filter(s=>s.id!==sid);await upP(p);renderFiche();}
+
+// DOCS
+function openDM(id){curDP=id;openM(‘m-doc’);}
+async function saveDoc(){
+const p=prospects.find(x=>x.id===curDP);if(!p)return;
+if(!p.docs)p.docs=[];
+p.docs.push({id:Date.now(),name:document.getElementById(‘d-name’).value.trim()||‘Document’,type:document.getElementById(‘d-type’).value,content:document.getElementById(‘d-content’).value.trim(),date:new Date().toLocaleDateString(‘fr-FR’)});
+await upP(p);closeM(‘m-doc’);[‘d-name’,‘d-content’].forEach(id=>document.getElementById(id).value=’’);
+renderFiche();toast(‘Document ajouté 📎’);
+}
+async function delDoc(pid,did){const p=prospects.find(x=>x.id===pid);if(!p)return;p.docs=p.docs.filter(d=>d.id!==did);await upP(p);renderFiche();}
+
+// TIMELINE
+function openTlM(id){
+curTP=id;
+const type=document.getElementById(‘tl-type’)?.value||‘email’;
+const em={email:‘📧’,relance:‘🔔’,réponse:‘💬’,note:‘📝’};
+document.getElementById(‘tl-mt’).textContent=em[type]+’ ‘+(type.charAt(0).toUpperCase()+type.slice(1));
+document.getElementById(‘tl-date’).value=new Date().toISOString().split(‘T’)[0];
+document.getElementById(‘tl-sb’).onclick=()=>saveTl(id);
+openM(‘m-tl’);
+}
+async function saveTl(id){
+const p=prospects.find(x=>x.id===id);if(!p)return;
+const type=document.getElementById(‘tl-type’)?.value||‘email’;
+const subj=document.getElementById(‘tl-subj’).value.trim();
+const cont=document.getElementById(‘tl-cont’).value.trim();
+const why=document.getElementById(‘tl-why’).value.trim();
+const dv=document.getElementById(‘tl-date’).value;
+const df=dv?new Date(dv).toLocaleDateString(‘fr-FR’,{day:‘numeric’,month:‘long’,year:‘numeric’}):new Date().toLocaleDateString(‘fr-FR’);
+p.timeline.unshift({type,subject:subj,content:cont,why,date:df,_ts:Date.now()});
+if(type===‘email’&&p.status===‘nouveau’)p.status=‘envoyé’;
+if(type===‘relance’)p.status=‘relance’;
+if(type===‘réponse’)p.status=‘réponse’;
+await upP(p);closeM(‘m-tl’);[‘tl-subj’,‘tl-cont’,‘tl-why’].forEach(id=>document.getElementById(id).value=’’);
+renderList();updateStats();renderFiche();checkAlerts();toast(‘Ajouté ✨’);
+}
+
+// EXEMPLES
+function openExM(id){curEP=id;document.getElementById(‘ex-sb’).onclick=()=>saveEx(id);openM(‘m-ex’);}
+async function saveEx(id){
+const p=prospects.find(x=>x.id===id);
+const t=document.getElementById(‘ex-t’).value.trim();
+const type=document.getElementById(‘ex-type’).value;
+const c=document.getElementById(‘ex-c’).value.trim();
+if(!t&&!c)return;
+if(!p.exemples)p.exemples=[];
+p.exemples.push({title:t||‘Exemple’,type,content:c});
+await upP(p);closeM(‘m-ex’);[‘ex-t’,‘ex-c’].forEach(id=>document.getElementById(id).value=’’);
+renderFiche();toast(‘Exemple ajouté ✍️’);
+}
+
+async function saveNotes(id,val){const p=prospects.find(x=>x.id===id);if(p){p.notes=val;await upP(p);}}
+async function chStatus(id,s){const p=prospects.find(x=>x.id===id);if(p){p.status=s;await upP(p);renderList();updateStats();renderFiche();checkAlerts();}}
+
+// ══════════════════════════════════
+// PRINCIPLES
+// ══════════════════════════════════
+let lf=‘all’;
+function renderPrPrev(){
+const el=document.getElementById(‘prprev’);
+el.innerHTML=principles.slice(0,3).map(p=>`<div class="chip"><span style="font-size:11px;">${p.color?.icon||'✨'}</span><span style="flex:1;font-size:.7rem;">${p.title.split('—')[0].trim().substring(0,30)}</span><span class="chiptag ${TC[p.tags?.[0]]||'ta'}">${TN[p.tags?.[0]]||''}</span></div>`).join(’’)+(principles.length>3?`<div style="font-size:.67rem;color:var(--soft);text-align:center;padding:2px 0;">+ ${principles.length-3} autres</div>`:’’);
+}
+
+function setLF(f,btn){lf=f;document.querySelectorAll(’#libF .fb’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);renderPrList();}
+
+function renderPrList(){
+const el=document.getElementById(‘prlist’);
+const filtered=lf===‘all’?principles:principles.filter(p=>(p.tags||[]).includes(lf));
+el.innerHTML=filtered.map(p=>`<div class="prc"> <div class="prh" onclick="togPr('${p.id||p._dbId}')"> <div class="pricon" style="background:${p.color?.bg||'#fde0e8'};border:1px solid ${p.color?.border||'#f2c4ce'};">${p.color?.icon||'✨'}</div> <div class="prm"><div class="prtit">${p.title}</div><div class="praut">${p.author||''}</div><div class="prsum">${p.summary||''}</div> <div class="prtags">${(p.tags||[]).map(t=>`<span class="tag ${TC[t]||'ta'}">${TN[t]||t}</span>`).join(’’)}</div></div>
+<button class="prexp" id="peb-${p.id||p._dbId}">▾</button>
+</div>
+<div class="prb" id="prb-${p.id||p._dbId}">
+<div class="prbi">${p.body||’’}</div>
+<div style="margin-top:8px;"><div class="slbl" style="font-size:.62rem;margin-bottom:4px;">📝 Notes personnelles</div>
+<textarea class="prna" placeholder="Tes observations..." onchange="savePrN('${p._dbId}',this.value)">${p.notes||’’}</textarea></div>
+</div>
+
+  </div>`).join('');
+}
+
+function togPr(id){document.getElementById(‘prb-’+id)?.classList.toggle(‘open’);document.getElementById(‘peb-’+id)?.classList.toggle(‘open’);}
+
+async function savePrN(dbId,val){
+const p=principles.find(x=>x._dbId==dbId);
+if(p){p.notes=val;if(cloud)try{await sbF(‘principles’,‘PATCH’,{data:p},‘id=eq.’+dbId);}catch(e){}saveL();}
+}
+
+let newPC2={bg:’#fde0e8’,border:’#f2c4ce’,icon:‘🌸’};
+function selPC(btn,bg,border,icon){document.querySelectorAll(’#apcol .colorbtn’).forEach(b=>b.classList.remove(‘sel’));btn.classList.add(‘sel’);newPC2={bg,border,icon};}
+
+async function savePrinciple(){
+const title=document.getElementById(‘ap-t’).value.trim();if(!title)return;
+const tags=[…document.querySelectorAll(’.apt:checked’)].map(i=>i.value);
+const p={id:Date.now(),title,author:document.getElementById(‘ap-a’).value.trim()||‘Personnel’,summary:document.getElementById(‘ap-s’).value.trim(),tags:tags.length?tags:[‘all’],body:document.getElementById(‘ap-b’).value.trim(),color:newPC2,notes:’’};
+const dbId=await cloudInsert(‘principles’,p);if(dbId)p._dbId=dbId;
+principles.push(p);saveL();closeM(‘m-principle’);
+[‘ap-t’,‘ap-a’,‘ap-s’,‘ap-b’].forEach(id=>document.getElementById(id).value=’’);
+document.querySelectorAll(’.apt’).forEach(i=>i.checked=false);
+renderPrList();renderPrPrev();toast(‘Principe ajouté ✨’);
+}
+
+// ══════════════════════════════════
+// COURS
+// ══════════════════════════════════
+let cf=‘all’;
+function renderCPrev(){
+const el=document.getElementById(‘cprev’);
+if(!cours.length){el.innerHTML=`<div style="font-size:.68rem;color:var(--soft);text-align:center;padding:4px 0;">Aucun cours 📚</div>`;return;}
+el.innerHTML=cours.slice(0,2).map(c=>`<div class="chip"><span style="font-size:11px;">${c.color?.icon||'📄'}</span><span style="flex:1;font-size:.7rem;">${c.title.substring(0,30)}</span><span class="chiptag ${TC[c.cat]||'ta'}">${TN[c.cat]||c.cat}</span></div>`).join(’’)+(cours.length>2?`<div style="font-size:.67rem;color:var(--soft);text-align:center;padding:2px 0;">+ ${cours.length-2} autres</div>`:’’);
+}
+
+function setCF(f,btn){cf=f;document.querySelectorAll(’#coursF .fb’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);renderCList();}
+
+function renderCList(){
+const el=document.getElementById(‘courslist’);
+const filtered=cf===‘all’?cours:cours.filter(c=>c.cat===cf);
+if(!filtered.length){el.innerHTML=`<div style="text-align:center;padding:26px;color:var(--soft);font-size:.74rem;">Aucune ressource dans cette catégorie</div>`;return;}
+el.innerHTML=filtered.map(c=>`<div class="cc"> <div class="cch" onclick="togC('${c.id||c._dbId}')"> <div class="ccic" style="background:${c.color?.bg||'#d4e8ff'};border:1px solid var(--border);">${c.color?.icon||'📄'}</div> <div class="ccm"><div class="cct">${c.title}</div><div class="ccs">${c.source||''}</div><div class="ccd">${c.desc||''}</div> <div class="prtags" style="margin-top:4px;"><span class="tag ${TC[c.cat]||'ta'}">${TN[c.cat]||c.cat}</span></div></div> <button class="ccexp" id="cce-${c.id||c._dbId}">▾</button> </div> <div class="ccb" id="ccb-${c.id||c._dbId}"> ${c.content?`<div style="background:var(--blush);border:1px solid var(--border);border-radius:9px;padding:11px;font-size:.74rem;color:var(--soft);line-height:1.7;white-space:pre-wrap;">${c.content}</div>`:''} ${c.link?`<a href="${c.link}" target="_blank" style="display:inline-block;margin-top:6px;font-size:.7rem;color:var(--rose-deep);">🔗 Accéder ↗</a>`:’’}
+<div style="margin-top:8px;"><div class="slbl" style="font-size:.62rem;margin-bottom:4px;">📝 Notes</div>
+<textarea class="prna" placeholder="Tes notes..." onchange="saveCN('${c._dbId}',this.value)">${c.notes||’’}</textarea></div>
+</div>
+
+  </div>`).join('');
+}
+
+function togC(id){document.getElementById(‘ccb-’+id)?.classList.toggle(‘open’);document.getElementById(‘cce-’+id)?.classList.toggle(‘open’);}
+
+async function saveCN(dbId,val){
+const c=cours.find(x=>x._dbId==dbId);
+if(c){c.notes=val;if(cloud)try{await sbF(‘courses’,‘PATCH’,{data:c},‘id=eq.’+dbId);}catch(e){}saveL();}
+}
+
+let newCC3={bg:’#d4e8ff’,icon:‘📄’};
+function selCC(btn,bg,icon){document.querySelectorAll(’#ccol .colorbtn’).forEach(b=>b.classList.remove(‘sel’));btn.classList.add(‘sel’);newCC3={bg,icon};}
+
+async function saveCours(){
+const title=document.getElementById(‘c-t’).value.trim();if(!title)return;
+const c={id:Date.now(),title,source:document.getElementById(‘c-s’).value.trim(),cat:document.getElementById(‘c-cat’).value,desc:document.getElementById(‘c-d’).value.trim(),content:document.getElementById(‘c-c’).value.trim(),link:document.getElementById(‘c-l’).value.trim(),color:newCC3,notes:’’};
+const dbId=await cloudInsert(‘courses’,c);if(dbId)c._dbId=dbId;
+cours.push(c);saveL();closeM(‘m-cours’);
+[‘c-t’,‘c-s’,‘c-d’,‘c-c’,‘c-l’].forEach(id=>document.getElementById(id).value=’’);
+renderCList();renderCPrev();toast(‘Ressource ajoutée 📚’);
+}
+
+// ══════════════════════════════════
+// PANELS & MODALS
+// ══════════════════════════════════
+function openPanel(t){
+if(t===‘lib’){document.getElementById(‘libPanel’).classList.add(‘open’);renderPrList();}
+else{document.getElementById(‘coursPanel’).classList.add(‘open’);renderCList();}
+}
+function closePanel(id){document.getElementById(id).classList.remove(‘open’);}
+function closePBg(e,id){if(e.target===document.getElementById(id))closePanel(id);}
+function openM(id){const el=document.getElementById(‘m-’+id)||document.getElementById(id);if(el)el.classList.add(‘open’);}
+function closeM(id){const el=document.getElementById(id);if(el)el.classList.remove(‘open’);}
+
+// ══════════════════════════════════
+// START
+// ══════════════════════════════════
+init();
+</script>
+
+</body>
+</html>
